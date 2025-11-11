@@ -1,8 +1,12 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import PortfolioItem
 from modeltranslation.forms import TranslationModelForm
+
+# Ensure modeltranslation registers translation fields before the form is evaluated
+import portfolio.translation  # noqa: F401
+
+from .models import PortfolioItem
 
 
 class PortfolioItemForm(TranslationModelForm):
