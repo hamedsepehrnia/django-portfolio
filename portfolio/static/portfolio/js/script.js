@@ -1,0 +1,939 @@
+// Three.js Starfield Setup
+let scene, camera, renderer, starfield;
+let starsGeometry, starsMaterial, stars;
+let velocities = null;
+
+// GSAP Animation Setup (will be registered when available)
+let gsapReady = false;
+
+// Snap Scroll Variables
+let isScrolling = false;
+let currentSection = 0;
+let sections = [];
+let isInPortfolio = false;
+let portfolioSection = null;
+let isInFreeScrollZone = false; // Free scroll from portfolio onwards (portfolio + contact)
+
+// Initialize Three.js Scene
+function initThreeJS() {
+    // Scene
+    scene = new THREE.Scene();
+    scene.background = null; // Transparent background
+    
+    // Camera
+    camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        2000
+    );
+    camera.position.z = 1000;
+    
+    // Renderer
+    const canvasContainer = document.getElementById('canvas-container');
+    const isMobile = window.innerWidth <= 768;
+    renderer = new THREE.WebGLRenderer({ 
+        alpha: true,
+        antialias: !isMobile // Disable antialiasing on mobile for better performance
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    // Lower pixel ratio on mobile for better performance
+    renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
+    canvasContainer.appendChild(renderer.domElement);
+    
+    // Create Starfield
+    createStarfield();
+    
+    // Lighting (for any future 3D objects)
+    const ambientLight = new THREE.AmbientLight(0xEAF2FF, 0.5);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xBBD7FF, 0.5);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+    
+    // Handle Window Resize
+    window.addEventListener('resize', onWindowResize);
+    
+    // Start Animation Loop
+    animate();
+}
+
+// Create Starfield with Points
+function createStarfield() {
+    // Reduce particle count - less crowded
+    const isMobile = window.innerWidth <= 768;
+    const particleCount = isMobile ? 6000 : 12000; // Further reduced for cleaner look
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    const sizes = new Float32Array(particleCount);
+    const opacities = new Float32Array(particleCount);
+    velocities = new Float32Array(particleCount);
+    
+    // Original color palette with full variety
+    const colorPalette = [
+        new THREE.Color(0x0050FF), // Primary blue
+        new THREE.Color(0x66CCFF), // Light blue
+        new THREE.Color(0xFFFFFF), // White
+        new THREE.Color(0xFFCCE6)  // Pink
+    ];
+    
+    for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        
+        // Random positions in a sphere
+        const radius = Math.random() * 2000 + 500;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        
+        positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+        positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        positions[i3 + 2] = radius * Math.cos(phi);
+        
+        // Random colors from palette - full variety
+        const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        colors[i3] = color.r;
+        colors[i3 + 1] = color.g;
+        colors[i3 + 2] = color.b;
+        
+        // Random sizes (larger for better visibility)
+        sizes[i] = Math.random() * 4 + 1.5;
+        
+        // Random opacities
+        opacities[i] = Math.random() * 0.8 + 0.2;
+        
+        // Random velocities for drift
+        velocities[i] = (Math.random() - 0.5) * 0.5;
+    }
+    
+    // Geometry
+    starsGeometry = new THREE.BufferGeometry();
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    starsGeometry.setAttribute('opacity', new THREE.BufferAttribute(opacities, 1));
+    
+    // Material - normal opacity for light mode
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    starsMaterial = new THREE.PointsMaterial({
+        size: 4, // Increased size for better visibility
+        vertexColors: true,
+        transparent: true,
+        opacity: isDarkMode ? 0.25 : 0.9, // Lower only in dark mode
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true
+    });
+    
+    // Points
+    stars = new THREE.Points(starsGeometry, starsMaterial);
+    scene.add(stars);
+}
+
+// Update starfield for dark mode
+function updateStarfieldForDarkMode(isDarkMode) {
+    if (!stars || !starsMaterial || !starsGeometry) return;
+    
+    // Update material opacity - significantly reduce in dark mode
+    starsMaterial.opacity = isDarkMode ? 0.25 : 0.9;
+    starsMaterial.needsUpdate = true;
+    
+    // Update colors for dark mode - replace white and bright colors with darker blues
+    const colors = starsGeometry.attributes.color.array;
+    
+    // Update white and bright particles to darker colors in dark mode
+    for (let i = 0; i < colors.length; i += 3) {
+        const r = colors[i];
+        const g = colors[i + 1];
+        const b = colors[i + 2];
+        
+        if (isDarkMode) {
+            // Replace white particles (bright) with subtle blue
+            if (r > 0.85 && g > 0.85 && b > 0.85) {
+                // Convert white to subtle blue-gray
+                colors[i] = 0.2;     // R - dark blue-gray
+                colors[i + 1] = 0.3; // G
+                colors[i + 2] = 0.5; // B - slightly more blue
+            }
+            // Replace pink particles with dark purple-blue
+            else if (r > 0.8 && g > 0.6 && b > 0.7) {
+                colors[i] = 0.15;    // R
+                colors[i + 1] = 0.2; // G
+                colors[i + 2] = 0.4; // B
+            }
+            // Reduce brightness of all bright blue particles (but not white/pink which are already handled)
+            else if (b > 0.7 && r < 0.3 && g < 0.9) {
+                colors[i] = Math.max(0, colors[i] * 0.4);
+                colors[i + 1] = Math.max(0, colors[i + 1] * 0.5);
+                colors[i + 2] = Math.max(0, colors[i + 2] * 0.6);
+            }
+        } else {
+            // In light mode, restore original vibrant colors
+            // Check if it's a dark mode color (dark blue-gray) and restore to original palette
+            if (r < 0.3 && g < 0.4 && b < 0.6) {
+                // This looks like a dark mode color, restore to original vibrant color
+                const originalPalette = [
+                    { r: 0.0, g: 0.31, b: 1.0 },  // Primary blue
+                    { r: 0.4, g: 0.8, b: 1.0 },   // Light blue
+                    { r: 1.0, g: 1.0, b: 1.0 },   // White
+                    { r: 1.0, g: 0.8, b: 0.9 }    // Pink
+                ];
+                const restoreColor = originalPalette[Math.floor(Math.random() * originalPalette.length)];
+                colors[i] = restoreColor.r;
+                colors[i + 1] = restoreColor.g;
+                colors[i + 2] = restoreColor.b;
+            }
+        }
+    }
+    
+    starsGeometry.attributes.color.needsUpdate = true;
+    
+    // Update opacities - significantly reduce in dark mode
+    const opacities = starsGeometry.attributes.opacity.array;
+    for (let i = 0; i < opacities.length; i++) {
+        if (isDarkMode) {
+            // Reduce opacity significantly for all particles in dark mode
+            opacities[i] = Math.max(0.05, opacities[i] * 0.3);
+        } else {
+            // Restore original opacity range for light mode
+            opacities[i] = Math.random() * 0.8 + 0.2;
+        }
+    }
+    starsGeometry.attributes.opacity.needsUpdate = true;
+}
+
+// Animation Loop
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Slow drift rotation
+    if (stars && starsGeometry && velocities) {
+        stars.rotation.y += 0.0005;
+        stars.rotation.x += 0.0002;
+        
+        // Update particle positions for drift
+        const positions = starsGeometry.attributes.position.array;
+        for (let i = 0; i < positions.length; i += 3) {
+            const index = i / 3;
+            if (velocities[index] !== undefined) {
+                positions[i + 2] += velocities[index] * 0.1;
+                if (positions[i + 2] > 1500) positions[i + 2] = -1500;
+                if (positions[i + 2] < -1500) positions[i + 2] = 1500;
+            }
+        }
+        starsGeometry.attributes.position.needsUpdate = true;
+    }
+    
+    if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+    }
+}
+
+// Initialize Snap Scroll System
+function initSnapScroll() {
+    // Get all sections (including footer for snap)
+    sections = Array.from(document.querySelectorAll('.hero, .section'));
+    // Add footer if it exists
+    const footer = document.querySelector('.footer');
+    if (footer && !sections.includes(footer)) {
+        sections.push(footer);
+    }
+    
+    // Find portfolio section
+    portfolioSection = document.querySelector('.portfolio-section');
+    
+    currentSection = 0;
+    
+    // Initialize current section based on scroll position
+    updateCurrentSection();
+    
+    // Disable default scroll behavior temporarily for smooth snapping
+    let wheelTimeout;
+    let isWheelScrolling = false;
+    
+    window.addEventListener('wheel', (e) => {
+        // Update current section and check if in free scroll zone
+        updateCurrentSection();
+        const inFreeScroll = checkIfInFreeScrollZone();
+        
+        // Allow free scroll in portfolio and contact sections (don't prevent default)
+        if (inFreeScroll) {
+            // Always allow free scroll in free scroll zones
+            document.documentElement.style.scrollSnapType = 'none';
+            return;
+        }
+        
+        // Normal snap scroll for other sections (before portfolio)
+        if (isScrolling) return;
+        
+        // Ensure snap scroll is enabled
+        document.documentElement.style.scrollSnapType = 'y mandatory';
+        
+        clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => {
+            isWheelScrolling = false;
+        }, 150);
+        
+        if (isWheelScrolling) return;
+        isWheelScrolling = true;
+        
+        e.preventDefault();
+        
+        const delta = e.deltaY;
+        const direction = delta > 0 ? 1 : -1;
+        
+        scrollToSection(direction);
+    }, { passive: false });
+    
+    // Handle keyboard navigation
+    window.addEventListener('keydown', (e) => {
+        // Update and check if in free scroll zone
+        updateCurrentSection();
+        const inFreeScroll = checkIfInFreeScrollZone();
+        
+        // In free scroll zone (portfolio or contact), allow free scroll with arrow keys
+        if (inFreeScroll && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp')) {
+            // Allow normal scroll, don't prevent default
+            document.documentElement.style.scrollSnapType = 'none';
+            return;
+        }
+        
+        // For other keys or outside free scroll zone, use snap scroll
+        if (isScrolling) return;
+        
+        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+            e.preventDefault();
+            document.documentElement.style.scrollSnapType = 'y mandatory';
+            scrollToSection(1);
+        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+            e.preventDefault();
+            document.documentElement.style.scrollSnapType = 'y mandatory';
+            scrollToSection(-1);
+        } else if (e.key === 'Home') {
+            e.preventDefault();
+            document.documentElement.style.scrollSnapType = 'y mandatory';
+            scrollToSectionIndex(0);
+        } else if (e.key === 'End') {
+            e.preventDefault();
+            document.documentElement.style.scrollSnapType = 'y mandatory';
+            scrollToSectionIndex(sections.length - 1);
+        }
+    });
+    
+    // Update current section on scroll (for manual scroll and free scroll zones)
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            updateCurrentSection();
+            
+            // Check if we're in free scroll zone and update scroll snap accordingly
+            const inFreeScroll = checkIfInFreeScrollZone();
+            if (inFreeScroll) {
+                document.documentElement.style.scrollSnapType = 'none';
+            } else {
+                document.documentElement.style.scrollSnapType = 'y mandatory';
+            }
+        }, 50);
+    }, { passive: true });
+}
+
+// Scroll to next/previous section
+function scrollToSection(direction) {
+    if (isScrolling) return;
+    
+    updateCurrentSection();
+    
+    const nextIndex = currentSection + direction;
+    
+    if (nextIndex >= 0 && nextIndex < sections.length) {
+        scrollToSectionIndex(nextIndex);
+    }
+}
+
+// Scroll to specific section index
+function scrollToSectionIndex(index) {
+    if (index < 0 || index >= sections.length || isScrolling) return;
+    
+    isScrolling = true;
+    currentSection = index;
+    
+    const targetSection = sections[index];
+    let targetPosition = targetSection.offsetTop;
+    
+    // Add offset for contact section to account for navigation bar
+    if (targetSection.classList.contains('contact-section')) {
+        // Get navigation bar height
+        const nav = document.querySelector('.nav');
+        const navHeight = nav ? nav.offsetHeight : 90;
+        // Scroll to show title below navigation
+        targetPosition = targetPosition - navHeight + 30;
+    }
+    
+    // Check if we're entering or leaving free scroll zone (portfolio or contact)
+    const isEnteringFreeScroll = !isInFreeScrollZone && (targetSection.classList.contains('portfolio-section') || targetSection.classList.contains('contact-section'));
+    const isLeavingFreeScroll = isInFreeScrollZone && !targetSection.classList.contains('portfolio-section') && !targetSection.classList.contains('contact-section');
+    
+    // Disable scroll snap when entering free scroll zone, enable when leaving
+    if (isEnteringFreeScroll) {
+        document.documentElement.style.scrollSnapType = 'none';
+        isInFreeScrollZone = true;
+    } else if (isLeavingFreeScroll) {
+        document.documentElement.style.scrollSnapType = 'y mandatory';
+        isInFreeScrollZone = false;
+    }
+    
+    // Use GSAP ScrollToPlugin if available, otherwise use native smooth scroll
+    if (typeof gsap !== 'undefined' && gsap.to && typeof ScrollToPlugin !== 'undefined') {
+        gsap.to(window, {
+            duration: 1.2,
+            scrollTo: {
+                y: Math.max(0, targetPosition), // Ensure not negative
+                autoKill: false
+            },
+            ease: 'power2.inOut',
+            onComplete: () => {
+                isScrolling = false;
+                updateCurrentSection();
+                
+                // Ensure scroll snap is properly set after animation
+                if (targetSection.classList.contains('portfolio-section') || targetSection.classList.contains('contact-section')) {
+                    document.documentElement.style.scrollSnapType = 'none';
+                    isInFreeScrollZone = true;
+                } else {
+                    document.documentElement.style.scrollSnapType = 'y mandatory';
+                    isInFreeScrollZone = false;
+                }
+            }
+        });
+    } else {
+        // Fallback to native smooth scroll
+        window.scrollTo({
+            top: Math.max(0, targetPosition), // Ensure not negative
+            behavior: 'smooth'
+        });
+        
+        // Reset scrolling flag after animation
+        setTimeout(() => {
+            isScrolling = false;
+            updateCurrentSection();
+            
+            // Ensure scroll snap is properly set after animation
+            if (targetSection.classList.contains('portfolio-section')) {
+                document.documentElement.style.scrollSnapType = 'none';
+            } else {
+                document.documentElement.style.scrollSnapType = 'y mandatory';
+            }
+        }, 1000);
+    }
+}
+
+// Update current section based on scroll position
+function updateCurrentSection() {
+    const scrollPosition = window.pageYOffset + window.innerHeight / 2;
+    let previousFreeScroll = isInFreeScrollZone;
+    isInPortfolio = false;
+    isInFreeScrollZone = false;
+    
+    sections.forEach((section, index) => {
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            currentSection = index;
+            
+            // Check if we're in portfolio or contact section (free scroll zone)
+            if (section.classList.contains('portfolio-section') || section.classList.contains('contact-section')) {
+                isInFreeScrollZone = true;
+                
+                if (section.classList.contains('portfolio-section')) {
+                    isInPortfolio = true;
+                    portfolioSection = section;
+                }
+                
+                // Disable scroll snap for free scroll zones
+                if (!previousFreeScroll) {
+                    document.documentElement.style.scrollSnapType = 'none';
+                }
+            }
+        }
+    });
+    
+    // Re-enable scroll snap only if we left free scroll zone (went back to before portfolio)
+    if (previousFreeScroll && !isInFreeScrollZone) {
+        document.documentElement.style.scrollSnapType = 'y mandatory';
+    }
+}
+
+// Check if we're currently in portfolio section
+function checkIfInPortfolio() {
+    const scrollPosition = window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    const viewportTop = scrollPosition;
+    const viewportBottom = scrollPosition + windowHeight;
+    
+    if (portfolioSection) {
+        const portfolioTop = portfolioSection.offsetTop;
+        const portfolioBottom = portfolioTop + portfolioSection.offsetHeight;
+        
+        // Check if portfolio is fully or partially in viewport
+        return (viewportTop < portfolioBottom && viewportBottom > portfolioTop);
+    }
+    
+    return false;
+}
+
+// Check if we're in free scroll zone (portfolio or contact)
+function checkIfInFreeScrollZone() {
+    return isInFreeScrollZone;
+}
+
+// Initialize GSAP Animations
+function initGSAPAnimations() {
+    // Register ScrollTrigger and ScrollToPlugin if not already registered
+    if (typeof gsap !== 'undefined' && typeof gsap.registerPlugin !== 'undefined') {
+        if (typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+        }
+        if (typeof ScrollToPlugin !== 'undefined') {
+            gsap.registerPlugin(ScrollToPlugin);
+        }
+        gsapReady = true;
+    } else {
+        console.warn('GSAP or plugins not loaded');
+        return;
+    }
+    
+    // Hero Logo Animation on Load (only if logo exists)
+    const heroLogoContainer = document.querySelector('.hero-logo-container');
+    if (heroLogoContainer) {
+        gsap.to('.hero-logo-container', {
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            ease: 'power3.out',
+            delay: 0.3
+        });
+    }
+    
+    // Hero Title Animation (adjusted delay if no logo)
+    const titleDelay = heroLogoContainer ? 0.6 : 0.3;
+    gsap.to('.hero-title', {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+        delay: titleDelay
+    });
+    
+    gsap.to('.hero-subtitle', {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+        delay: titleDelay + 0.2
+    });
+    
+    gsap.to('.hero-description', {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+        delay: titleDelay + 0.4
+    });
+    
+    // Scroll indicator delay (sooner if no logo)
+    const scrollDelay = heroLogoContainer ? 1.5 : titleDelay + 0.8;
+    gsap.to('.scroll-indicator', {
+        opacity: 1,
+        duration: 1,
+        delay: scrollDelay
+    });
+    
+    // Scroll-based Camera Movement (compatible with snap scroll)
+    ScrollTrigger.create({
+        trigger: 'body',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.5, // Smoother scrub for snap scroll
+        onUpdate: (self) => {
+            if (camera && stars) {
+                const scrollProgress = self.progress;
+                
+                // Keep camera at fixed position to maintain consistent star visibility
+                // Only slight movement for subtle parallax effect
+                camera.position.z = 1000 - (scrollProgress * 100); // Very minimal movement (was 500)
+                
+                // Increase scale more aggressively to keep stars visible throughout scroll
+                const scale = 1 + scrollProgress * 2; // Increased from 0.5 to 2 for better visibility
+                stars.scale.set(scale, scale, scale);
+                
+                // Significantly increase particle size as we scroll to maintain visibility
+                if (starsMaterial) {
+                    // Base size is 4, increase to 8 at end of scroll for better visibility
+                    starsMaterial.size = 4 + (scrollProgress * 4); // Size increases from 4 to 8
+                }
+            }
+        }
+    });
+    
+    // Section Title Animations
+    gsap.utils.toArray('.section-title').forEach((title) => {
+        gsap.to(title, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: title,
+                start: 'top 80%',
+                end: 'top 50%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+    
+    // Text Block Animations
+    gsap.utils.toArray('.text-block').forEach((block, index) => {
+        gsap.to(block, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            delay: index * 0.2,
+            scrollTrigger: {
+                trigger: block,
+                start: 'top 85%',
+                end: 'top 60%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+    
+    // Portfolio Item Animations
+    gsap.utils.toArray('.portfolio-item').forEach((item, index) => {
+        gsap.to(item, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: index * 0.1,
+            scrollTrigger: {
+                trigger: item,
+                start: 'top 85%',
+                end: 'top 60%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+    
+    // Service Card Animations
+    gsap.utils.toArray('.service-card').forEach((card, index) => {
+        gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: index * 0.15,
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%',
+                end: 'top 60%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+    
+    // Contact Section Animations
+    gsap.to('.contact-info-section', {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+            trigger: '.contact-section',
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none none'
+        }
+    });
+    
+    gsap.to('.contact-form-container', {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 0.2,
+        scrollTrigger: {
+            trigger: '.contact-section',
+            start: 'top 80%',
+            end: 'top 50%',
+            toggleActions: 'play none none none'
+        }
+    });
+    
+    // Animate contact detail items
+    gsap.utils.toArray('.contact-detail-item').forEach((item, index) => {
+        gsap.to(item, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: index * 0.15,
+            scrollTrigger: {
+                trigger: item,
+                start: 'top 85%',
+                end: 'top 60%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+}
+
+// Cursor Trail Effect (Optional - can be disabled)
+function initCursorTrail() {
+    const trail = document.querySelector('.cursor-trail');
+    if (!trail) return;
+    
+    // Set to false to disable cursor trail
+    const enableCursorTrail = true;
+    if (!enableCursorTrail) {
+        trail.style.display = 'none';
+        return;
+    }
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let trailX = 0;
+    let trailY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        trail.classList.add('active');
+    });
+    
+    function updateTrail() {
+        trailX += (mouseX - trailX) * 0.1;
+        trailY += (mouseY - trailY) * 0.1;
+        trail.style.left = trailX - 10 + 'px';
+        trail.style.top = trailY - 10 + 'px';
+        requestAnimationFrame(updateTrail);
+    }
+    
+    updateTrail();
+    
+    document.addEventListener('mouseleave', () => {
+        trail.classList.remove('active');
+    });
+}
+
+// Handle Window Resize
+function onWindowResize() {
+    if (camera && renderer) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+}
+
+// Smooth Scroll for Navigation Links with GSAP
+function initNavigationScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            
+            if (targetId === '#') return;
+            
+            const target = document.querySelector(targetId);
+            
+            if (target && typeof gsap !== 'undefined') {
+                // Find section index by matching ID or checking if section contains the target
+                let targetIndex = -1;
+                const targetIdClean = targetId.substring(1); // Remove #
+                
+                sections.forEach((section, index) => {
+                    if (section.id === targetIdClean) {
+                        targetIndex = index;
+                    } else if (section.querySelector(targetId)) {
+                        targetIndex = index;
+                    }
+                });
+                
+                // If found, scroll to that section
+                if (targetIndex !== -1) {
+                    scrollToSectionIndex(targetIndex);
+                } else {
+                    // Fallback: scroll to target directly
+                    if (typeof ScrollToPlugin !== 'undefined') {
+                        gsap.to(window, {
+                            duration: 1.2,
+                            scrollTo: {
+                                y: target,
+                                offsetY: 0
+                            },
+                            ease: 'power2.inOut'
+                        });
+                    } else {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            }
+        });
+    });
+}
+
+// Performance Monitoring (optional)
+function monitorPerformance() {
+    let lastTime = performance.now();
+    let frameCount = 0;
+    
+    function checkFrameRate() {
+        frameCount++;
+        const currentTime = performance.now();
+        const deltaTime = currentTime - lastTime;
+        
+        if (deltaTime >= 1000) {
+            const fps = Math.round((frameCount * 1000) / deltaTime);
+            if (fps < 50) {
+                console.warn('Frame rate below target:', fps);
+            }
+            frameCount = 0;
+            lastTime = currentTime;
+        }
+        
+        requestAnimationFrame(checkFrameRate);
+    }
+    
+    checkFrameRate();
+}
+
+// Initialize Dark Mode
+function initDarkMode() {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+    
+    // Check for saved theme preference or default to light mode
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        body.classList.add('dark-mode');
+    }
+    
+    // Update starfield for initial dark mode state (with delay to ensure Three.js is ready)
+    const updateStarfield = () => {
+        if (stars && starsMaterial && starsGeometry) {
+            updateStarfieldForDarkMode(body.classList.contains('dark-mode'));
+        } else {
+            // Retry after a short delay if Three.js isn't ready yet
+            setTimeout(updateStarfield, 50);
+        }
+    };
+    updateStarfield();
+    
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            
+            // Save preference
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            // Update starfield for dark mode
+            updateStarfieldForDarkMode(isDark);
+            
+            // Icons are controlled by CSS transitions
+        });
+    }
+}
+
+// Initialize Mobile Menu
+function initMobileMenu() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    }
+}
+
+// Initialize Everything
+window.addEventListener('load', () => {
+    // Initialize Three.js first
+    if (typeof THREE !== 'undefined') {
+        initThreeJS();
+    } else {
+        console.error('Three.js not loaded');
+    }
+    
+    // Initialize GSAP animations
+    if (typeof gsap !== 'undefined') {
+        // Small delay to ensure ScrollTrigger and ScrollToPlugin are loaded
+        setTimeout(() => {
+            initGSAPAnimations();
+            // Initialize snap scroll first to populate sections array
+            initSnapScroll();
+            // Then initialize navigation which depends on sections array
+            initNavigationScroll();
+        }, 150);
+    } else {
+        console.error('GSAP not loaded');
+    }
+    
+    // Initialize dark mode (should be called after Three.js to update starfield)
+    // But we need to check if Three.js is ready
+    setTimeout(() => {
+        initDarkMode();
+    }, 100);
+    
+    // Initialize mobile menu
+    initMobileMenu();
+    
+    // Initialize cursor trail
+    initCursorTrail();
+    
+    // Initialize contact form handler
+    initContactForm();
+    
+    // monitorPerformance(); // Uncomment for performance monitoring
+});
+
+// Contact Form Handler
+function initContactForm() {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        // Remove preventDefault to allow normal form submission
+        // Form will submit normally to Django backend
+        contactForm.addEventListener('submit', function(e) {
+            // Let the form submit normally - Django will handle it
+            // No need to prevent default or show alert
+            // Success/error messages will be shown by Django messages framework
+        });
+    }
+}
+

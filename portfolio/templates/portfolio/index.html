@@ -1,0 +1,153 @@
+{% extends 'portfolio/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            {% if heroes %}
+            {% with hero=heroes|first %}
+            <h1 class="hero-title">{{ hero.title }}</h1>
+            <p class="hero-subtitle">{{ hero.subtitle }}</p>
+            <div class="hero-description">
+                <p>{{ hero.description }}</p>
+            </div>
+            {% endwith %}
+            {% endif %}
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about-section">
+        <div class="container">
+            <div class="section-content">
+                <h2 class="section-title">{% trans "About Us" %}</h2>
+                {% for about in about_items %}
+                <div class="text-block">
+                    <p>{{ about.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section services-section">
+        <div class="container">
+            <h2 class="section-title">{% trans "Our Services" %}</h2>
+            <div class="services-scroll-container">
+                <div class="services-grid">
+                    {% for service in services %}
+                    <div class="service-card">
+                        <div class="service-icon">
+                            {{ service.icon_svg|safe }}
+                        </div>
+                        <h3 class="service-title">{{ service.title }}</h3>
+                        <p class="service-description">{{ service.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="section portfolio-section">
+        <div class="container">
+            <h2 class="section-title">{% trans "Portfolio" %}</h2>
+            <div class="portfolio-grid">
+                {% for item in portfolio_items %}
+                <div class="portfolio-item">
+                    {% if item.portfolio_type == 'online' and item.url %}
+                    <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="portfolio-link">
+                    {% elif item.portfolio_type == 'offline' and item.offline_file %}
+                    <a href="{% url 'portfolio:view' item.id %}" class="portfolio-link">
+                    {% else %}
+                    <div class="portfolio-link">
+                    {% endif %}
+                        <div class="portfolio-item-inner">
+                            <div class="portfolio-image" {% if item.image %}style="background-image: url('{{ item.image.url }}');"{% endif %}></div>
+                            <div class="portfolio-overlay">
+                                <h3 class="portfolio-title">{{ item.title }}</h3>
+                                <p class="portfolio-description">{{ item.description }}</p>
+                                {% if item.portfolio_type == 'online' %}
+                                <span class="portfolio-badge">{% trans "Online" %}</span>
+                                {% elif item.portfolio_type == 'offline' %}
+                                <span class="portfolio-badge">{% trans "Offline" %}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% if item.portfolio_type == 'online' and item.url or item.portfolio_type == 'offline' and item.offline_file %}
+                    </a>
+                    {% else %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section contact-section">
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info-section">
+                    <h2 class="section-title">{% trans "Get In Touch" %}</h2>
+                    <div class="text-block">
+                        <p>{% trans "Ready to start your next project? Let's create something amazing together." %}</p>
+                    </div>
+                    <div class="contact-details">
+                        {% if contact_info %}
+                        {% with contact=contact_info|first %}
+                        <div class="contact-detail-item">
+                            <div class="contact-icon">✉</div>
+                            <div class="contact-detail-content">
+                                <h3>{% trans "Email" %}</h3>
+                                <a href="mailto:{{ contact.email }}" class="contact-link" {% if LANGUAGE_CODE == 'fa' %}dir="ltr"{% endif %}>{{ contact.email }}</a>
+                            </div>
+                        </div>
+                        <div class="contact-detail-item">
+                            <div class="contact-icon">📞</div>
+                            <div class="contact-detail-content">
+                                <h3>{% trans "Phone" %}</h3>
+                                <a href="tel:{{ contact.phone }}" class="contact-link" {% if LANGUAGE_CODE == 'fa' %}dir="ltr"{% endif %}>{{ contact.phone }}</a>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="contact-form-container">
+                    <form class="contact-form glass-form" id="contactForm" method="post" action="{% url 'portfolio:contact' %}">
+                        {% csrf_token %}
+                        <h3 class="form-title">{% trans "Send us a message" %}</h3>
+                        <div class="form-group">
+                            <label for="name">{% trans "Name" %}</label>
+                            <input type="text" id="name" name="name" required placeholder="{% trans 'Your name' %}">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">{% trans "Email" %}</label>
+                            <input type="email" id="email" name="email" required placeholder="{% trans 'your.email@example.com' %}">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">{% trans "Subject" %}</label>
+                            <input type="text" id="subject" name="subject" required placeholder="{% trans 'What\'s this about?' %}">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">{% trans "Message" %}</label>
+                            <textarea id="message" name="message" rows="3" required placeholder="{% trans 'Tell us about your project...' %}"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">{% trans "Send Message" %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
