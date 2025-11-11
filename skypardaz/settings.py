@@ -136,12 +136,18 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'fa')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATIC_URL = 'static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files (User uploaded files)
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# # Media files (User uploaded files)
+# MEDIA_URL = 'media/'
+# MEDIA_ROOT = BASE_DIR / 'media'
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]               # Source static files directory
+STATIC_ROOT = config('STATIC_ROOT', default=str(BASE_DIR / "staticfiles"))  # Collected static files on production server
+MEDIA_URL = "/media/"
+MEDIA_ROOT = config('MEDIA_ROOT', default=str(BASE_DIR / "media"))          # User uploaded files on production server
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
