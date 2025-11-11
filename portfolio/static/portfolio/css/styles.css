@@ -613,6 +613,7 @@ body.dark-mode .services-section {
 .services-scroll-container {
     position: relative;
     margin-top: 2rem;
+    margin-bottom: 4rem;
     max-height: none;
     overflow: visible;
     padding-bottom: 0;
