@@ -613,58 +613,9 @@ body.dark-mode .services-section {
 .services-scroll-container {
     position: relative;
     margin-top: 2rem;
-    /* Show 1.5 rows: 3 full services + 1.5 service */
-    /* Each service card is approximately 400px tall (with padding and content) */
-    /* Gap between rows is 2rem */
-    /* So: 1 row (400px) + 0.5 row (200px) + gap (2rem) = ~650px */
-    max-height: 650px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 1rem;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 80, 255, 0.3) transparent;
-}
-
-.services-scroll-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.services-scroll-container::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.services-scroll-container::-webkit-scrollbar-thumb {
-    background: rgba(0, 80, 255, 0.3);
-    border-radius: 4px;
-}
-
-.services-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 80, 255, 0.5);
-}
-
-body.dark-mode .services-scroll-container::-webkit-scrollbar-thumb {
-    background: rgba(102, 204, 255, 0.3);
-}
-
-body.dark-mode .services-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 204, 255, 0.5);
-}
-
-/* Fade effect at the bottom */
-.services-scroll-container::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: linear-gradient(to bottom, transparent, var(--ambient-light));
-    pointer-events: none;
-    z-index: 10;
-}
-
-body.dark-mode .services-scroll-container::after {
-    background: linear-gradient(to bottom, transparent, var(--bg-dark));
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 0;
 }
 
 .services-grid {
@@ -1370,12 +1321,6 @@ body.dark-mode .footer p {
     
     .portfolio-item {
         min-height: 250px;
-    }
-    
-    .services-scroll-container {
-        /* On mobile, show 1.5 services (single column) */
-        /* Each service is ~350px tall, so 1.5 = ~525px */
-        max-height: 525px;
     }
     
     .services-grid {
