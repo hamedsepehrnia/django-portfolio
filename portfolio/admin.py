@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin
 from .models import Hero, About, Service, PortfolioItem, ContactInfo, ContactMessage
-from .forms import PortfolioItemForm
 
 
 @admin.register(Hero)
@@ -30,7 +29,6 @@ class ServiceAdmin(TranslationAdmin):
 
 @admin.register(PortfolioItem)
 class PortfolioItemAdmin(TranslationAdmin):
-    form = PortfolioItemForm
     list_display = ['title', 'portfolio_type', 'order', 'is_active']
     list_filter = ['portfolio_type', 'is_active']
     search_fields = ['title', 'description']
