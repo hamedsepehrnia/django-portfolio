@@ -2,9 +2,10 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import PortfolioItem
+from modeltranslation.forms import TranslationModelForm
 
 
-class PortfolioItemForm(forms.ModelForm):
+class PortfolioItemForm(TranslationModelForm):
     class Meta:
         model = PortfolioItem
         fields = '__all__'

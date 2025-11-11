@@ -1,18 +1,19 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from modeltranslation.admin import TranslationAdmin
 from .models import Hero, About, Service, PortfolioItem, ContactInfo, ContactMessage
 from .forms import PortfolioItemForm
 
 
 @admin.register(Hero)
-class HeroAdmin(admin.ModelAdmin):
+class HeroAdmin(TranslationAdmin):
     list_display = ['title', 'subtitle', 'is_active']
     list_filter = ['is_active']
     search_fields = ['title', 'subtitle']
 
 
 @admin.register(About)
-class AboutAdmin(admin.ModelAdmin):
+class AboutAdmin(TranslationAdmin):
     list_display = ['title', 'order', 'is_active']
     list_filter = ['is_active']
     search_fields = ['title', 'content']
@@ -20,7 +21,7 @@ class AboutAdmin(admin.ModelAdmin):
 
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
+class ServiceAdmin(TranslationAdmin):
     list_display = ['title', 'order', 'is_active']
     list_filter = ['is_active']
     search_fields = ['title', 'description']
@@ -28,7 +29,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 @admin.register(PortfolioItem)
-class PortfolioItemAdmin(admin.ModelAdmin):
+class PortfolioItemAdmin(TranslationAdmin):
     form = PortfolioItemForm
     list_display = ['title', 'portfolio_type', 'order', 'is_active']
     list_filter = ['portfolio_type', 'is_active']
