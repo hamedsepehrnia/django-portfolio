@@ -6,14 +6,6 @@ let velocities = null;
 // GSAP Animation Setup (will be registered when available)
 let gsapReady = false;
 
-// Snap Scroll Variables
-let isScrolling = false;
-let currentSection = 0;
-let sections = [];
-let isInPortfolio = false;
-let portfolioSection = null;
-let isInFreeScrollZone = false; // Free scroll from portfolio onwards (portfolio + contact)
-
 // Initialize Three.js Scene
 function initThreeJS() {
     // Scene
@@ -229,264 +221,7 @@ function animate() {
     }
 }
 
-// Initialize Snap Scroll System
-function initSnapScroll() {
-    // Get all sections (including footer for snap)
-    sections = Array.from(document.querySelectorAll('.hero, .section'));
-    // Add footer if it exists
-    const footer = document.querySelector('.footer');
-    if (footer && !sections.includes(footer)) {
-        sections.push(footer);
-    }
-    
-    // Find portfolio section
-    portfolioSection = document.querySelector('.portfolio-section');
-    
-    currentSection = 0;
-    
-    // Initialize current section based on scroll position
-    updateCurrentSection();
-    
-    // Disable default scroll behavior temporarily for smooth snapping
-    let wheelTimeout;
-    let isWheelScrolling = false;
-    
-    window.addEventListener('wheel', (e) => {
-        // Update current section and check if in free scroll zone
-        updateCurrentSection();
-        const inFreeScroll = checkIfInFreeScrollZone();
-        
-        // Allow free scroll in portfolio and contact sections (don't prevent default)
-        if (inFreeScroll) {
-            // Always allow free scroll in free scroll zones
-            document.documentElement.style.scrollSnapType = 'none';
-            return;
-        }
-        
-        // Normal snap scroll for other sections (before portfolio)
-        if (isScrolling) return;
-        
-        // Ensure snap scroll is enabled
-        document.documentElement.style.scrollSnapType = 'y mandatory';
-        
-        clearTimeout(wheelTimeout);
-        wheelTimeout = setTimeout(() => {
-            isWheelScrolling = false;
-        }, 150);
-        
-        if (isWheelScrolling) return;
-        isWheelScrolling = true;
-        
-        e.preventDefault();
-        
-        const delta = e.deltaY;
-        const direction = delta > 0 ? 1 : -1;
-        
-        scrollToSection(direction);
-    }, { passive: false });
-    
-    // Handle keyboard navigation
-    window.addEventListener('keydown', (e) => {
-        // Update and check if in free scroll zone
-        updateCurrentSection();
-        const inFreeScroll = checkIfInFreeScrollZone();
-        
-        // In free scroll zone (portfolio or contact), allow free scroll with arrow keys
-        if (inFreeScroll && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp')) {
-            // Allow normal scroll, don't prevent default
-            document.documentElement.style.scrollSnapType = 'none';
-            return;
-        }
-        
-        // For other keys or outside free scroll zone, use snap scroll
-        if (isScrolling) return;
-        
-        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-            e.preventDefault();
-            document.documentElement.style.scrollSnapType = 'y mandatory';
-            scrollToSection(1);
-        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-            e.preventDefault();
-            document.documentElement.style.scrollSnapType = 'y mandatory';
-            scrollToSection(-1);
-        } else if (e.key === 'Home') {
-            e.preventDefault();
-            document.documentElement.style.scrollSnapType = 'y mandatory';
-            scrollToSectionIndex(0);
-        } else if (e.key === 'End') {
-            e.preventDefault();
-            document.documentElement.style.scrollSnapType = 'y mandatory';
-            scrollToSectionIndex(sections.length - 1);
-        }
-    });
-    
-    // Update current section on scroll (for manual scroll and free scroll zones)
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            updateCurrentSection();
-            
-            // Check if we're in free scroll zone and update scroll snap accordingly
-            const inFreeScroll = checkIfInFreeScrollZone();
-            if (inFreeScroll) {
-                document.documentElement.style.scrollSnapType = 'none';
-            } else {
-                document.documentElement.style.scrollSnapType = 'y mandatory';
-            }
-        }, 50);
-    }, { passive: true });
-}
-
-// Scroll to next/previous section
-function scrollToSection(direction) {
-    if (isScrolling) return;
-    
-    updateCurrentSection();
-    
-    const nextIndex = currentSection + direction;
-    
-    if (nextIndex >= 0 && nextIndex < sections.length) {
-        scrollToSectionIndex(nextIndex);
-    }
-}
-
-// Scroll to specific section index
-function scrollToSectionIndex(index) {
-    if (index < 0 || index >= sections.length || isScrolling) return;
-    
-    isScrolling = true;
-    currentSection = index;
-    
-    const targetSection = sections[index];
-    let targetPosition = targetSection.offsetTop;
-    
-    // Add offset for contact section to account for navigation bar
-    if (targetSection.classList.contains('contact-section')) {
-        // Get navigation bar height
-        const nav = document.querySelector('.nav');
-        const navHeight = nav ? nav.offsetHeight : 90;
-        // Scroll to show title below navigation
-        targetPosition = targetPosition - navHeight + 30;
-    }
-    
-    // Check if we're entering or leaving free scroll zone (portfolio or contact)
-    const isEnteringFreeScroll = !isInFreeScrollZone && (targetSection.classList.contains('portfolio-section') || targetSection.classList.contains('contact-section'));
-    const isLeavingFreeScroll = isInFreeScrollZone && !targetSection.classList.contains('portfolio-section') && !targetSection.classList.contains('contact-section');
-    
-    // Disable scroll snap when entering free scroll zone, enable when leaving
-    if (isEnteringFreeScroll) {
-        document.documentElement.style.scrollSnapType = 'none';
-        isInFreeScrollZone = true;
-    } else if (isLeavingFreeScroll) {
-        document.documentElement.style.scrollSnapType = 'y mandatory';
-        isInFreeScrollZone = false;
-    }
-    
-    // Use GSAP ScrollToPlugin if available, otherwise use native smooth scroll
-    if (typeof gsap !== 'undefined' && gsap.to && typeof ScrollToPlugin !== 'undefined') {
-        gsap.to(window, {
-            duration: 1.2,
-            scrollTo: {
-                y: Math.max(0, targetPosition), // Ensure not negative
-                autoKill: false
-            },
-            ease: 'power2.inOut',
-            onComplete: () => {
-                isScrolling = false;
-                updateCurrentSection();
-                
-                // Ensure scroll snap is properly set after animation
-                if (targetSection.classList.contains('portfolio-section') || targetSection.classList.contains('contact-section')) {
-                    document.documentElement.style.scrollSnapType = 'none';
-                    isInFreeScrollZone = true;
-                } else {
-                    document.documentElement.style.scrollSnapType = 'y mandatory';
-                    isInFreeScrollZone = false;
-                }
-            }
-        });
-    } else {
-        // Fallback to native smooth scroll
-        window.scrollTo({
-            top: Math.max(0, targetPosition), // Ensure not negative
-            behavior: 'smooth'
-        });
-        
-        // Reset scrolling flag after animation
-        setTimeout(() => {
-            isScrolling = false;
-            updateCurrentSection();
-            
-            // Ensure scroll snap is properly set after animation
-            if (targetSection.classList.contains('portfolio-section')) {
-                document.documentElement.style.scrollSnapType = 'none';
-            } else {
-                document.documentElement.style.scrollSnapType = 'y mandatory';
-            }
-        }, 1000);
-    }
-}
-
-// Update current section based on scroll position
-function updateCurrentSection() {
-    const scrollPosition = window.pageYOffset + window.innerHeight / 2;
-    let previousFreeScroll = isInFreeScrollZone;
-    isInPortfolio = false;
-    isInFreeScrollZone = false;
-    
-    sections.forEach((section, index) => {
-        const sectionTop = section.offsetTop;
-        const sectionBottom = sectionTop + section.offsetHeight;
-        
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-            currentSection = index;
-            
-            // Check if we're in portfolio or contact section (free scroll zone)
-            if (section.classList.contains('portfolio-section') || section.classList.contains('contact-section')) {
-                isInFreeScrollZone = true;
-                
-                if (section.classList.contains('portfolio-section')) {
-                    isInPortfolio = true;
-                    portfolioSection = section;
-                }
-                
-                // Disable scroll snap for free scroll zones
-                if (!previousFreeScroll) {
-                    document.documentElement.style.scrollSnapType = 'none';
-                }
-            }
-        }
-    });
-    
-    // Re-enable scroll snap only if we left free scroll zone (went back to before portfolio)
-    if (previousFreeScroll && !isInFreeScrollZone) {
-        document.documentElement.style.scrollSnapType = 'y mandatory';
-    }
-}
-
-// Check if we're currently in portfolio section
-function checkIfInPortfolio() {
-    const scrollPosition = window.pageYOffset;
-    const windowHeight = window.innerHeight;
-    const viewportTop = scrollPosition;
-    const viewportBottom = scrollPosition + windowHeight;
-    
-    if (portfolioSection) {
-        const portfolioTop = portfolioSection.offsetTop;
-        const portfolioBottom = portfolioTop + portfolioSection.offsetHeight;
-        
-        // Check if portfolio is fully or partially in viewport
-        return (viewportTop < portfolioBottom && viewportBottom > portfolioTop);
-    }
-    
-    return false;
-}
-
-// Check if we're in free scroll zone (portfolio or contact)
-function checkIfInFreeScrollZone() {
-    return isInFreeScrollZone;
-}
+// Snap scroll functionality removed to allow free scrolling
 
 // Initialize GSAP Animations
 function initGSAPAnimations() {
@@ -739,49 +474,38 @@ function onWindowResize() {
 
 // Smooth Scroll for Navigation Links with GSAP
 function initNavigationScroll() {
+    const nav = document.querySelector('.nav');
+    const getNavOffset = () => (nav ? nav.offsetHeight : 0);
+    
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault();
             const targetId = this.getAttribute('href');
             
             if (targetId === '#') return;
             
             const target = document.querySelector(targetId);
             
-            if (target && typeof gsap !== 'undefined') {
-                // Find section index by matching ID or checking if section contains the target
-                let targetIndex = -1;
-                const targetIdClean = targetId.substring(1); // Remove #
-                
-                sections.forEach((section, index) => {
-                    if (section.id === targetIdClean) {
-                        targetIndex = index;
-                    } else if (section.querySelector(targetId)) {
-                        targetIndex = index;
-                    }
+            if (!target) return;
+            
+            e.preventDefault();
+            
+            const offset = getNavOffset();
+            
+            if (typeof gsap !== 'undefined' && typeof ScrollToPlugin !== 'undefined') {
+                gsap.to(window, {
+                    duration: 1.2,
+                    scrollTo: {
+                        y: target,
+                        offsetY: offset
+                    },
+                    ease: 'power2.inOut'
                 });
-                
-                // If found, scroll to that section
-                if (targetIndex !== -1) {
-                    scrollToSectionIndex(targetIndex);
-                } else {
-                    // Fallback: scroll to target directly
-                    if (typeof ScrollToPlugin !== 'undefined') {
-                        gsap.to(window, {
-                            duration: 1.2,
-                            scrollTo: {
-                                y: target,
-                                offsetY: 0
-                            },
-                            ease: 'power2.inOut'
-                        });
-                    } else {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
+            } else {
+                const targetTop = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({
+                    top: Math.max(0, targetTop),
+                    behavior: 'smooth'
+                });
             }
         });
     });
@@ -896,9 +620,6 @@ window.addEventListener('load', () => {
         // Small delay to ensure ScrollTrigger and ScrollToPlugin are loaded
         setTimeout(() => {
             initGSAPAnimations();
-            // Initialize snap scroll first to populate sections array
-            initSnapScroll();
-            // Then initialize navigation which depends on sections array
             initNavigationScroll();
         }, 150);
     } else {

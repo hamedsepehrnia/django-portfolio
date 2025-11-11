@@ -6,9 +6,9 @@ html[dir="rtl"] body {
     text-align: right;
 }
 
-/* Ensure scroll-snap works for RTL */
+/* Override scroll behavior for RTL */
 html[dir="rtl"] {
-    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
 }
 
 /* Navigation RTL - Keep layout same as LTR but reverse menu items */
@@ -148,7 +148,6 @@ html[dir="rtl"] .form-group textarea::placeholder {
 html[dir="rtl"] .hero {
     padding-top: 10rem;
     min-height: 100vh;
-    height: 100vh;
 }
 
 html[dir="rtl"] .hero-content {
@@ -159,29 +158,20 @@ html[dir="rtl"] .hero-content {
 html[dir="rtl"] .section {
     padding: 5rem 2rem;
     min-height: 100vh;
-    height: 100vh;
 }
 
 html[dir="rtl"] .section.contact-section {
-    height: 100vh !important;
     min-height: 100vh;
-    max-height: 100vh;
     justify-content: flex-start;
     padding: 5.5rem 2rem 1.5rem;
-    overflow: hidden;
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
     scroll-margin-top: 90px; /* Account for fixed navigation */
     display: flex;
     flex-direction: column;
 }
 
 html[dir="rtl"] .section.contact-section .container {
-    max-height: calc(100vh - 7rem);
-    height: 100%;
+    height: auto;
     padding: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
     flex: 1;
 }
 
@@ -203,7 +193,6 @@ html[dir="rtl"] .contact-info-section {
     
     html[dir="rtl"] .section.contact-section .container {
         padding: 0;
-        max-height: calc(100vh - 6.5rem);
     }
     
     html[dir="rtl"] .contact-info-section {
@@ -213,7 +202,6 @@ html[dir="rtl"] .contact-info-section {
 
 /* Portfolio section exception for RTL */
 html[dir="rtl"] .section.portfolio-section {
-    height: auto !important;
     min-height: 100vh;
     justify-content: flex-start;
     padding-top: 6rem;

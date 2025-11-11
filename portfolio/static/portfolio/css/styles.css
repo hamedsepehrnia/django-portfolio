@@ -28,7 +28,6 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
     overflow-y: scroll;
 }
 
@@ -386,7 +385,6 @@ body.dark-mode .lang-switcher:hover {
 .hero {
     position: relative;
     min-height: 100vh;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -394,8 +392,6 @@ body.dark-mode .lang-switcher:hover {
     z-index: 1;
     padding: 8rem 1.5rem 3rem;
     text-align: center;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
 }
 
 .hero-content {
@@ -505,47 +501,32 @@ body.dark-mode .hero-title {
     padding: 5rem 2rem;
     z-index: 1;
     min-height: 100vh;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
 }
 
 /* Portfolio section exception - allow it to be taller than 100vh */
 .section.portfolio-section {
-    height: auto !important;
     min-height: 100vh;
     justify-content: flex-start;
     padding-top: 6rem;
     padding-bottom: 6rem;
-    overflow-y: visible;
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
 }
 
 /* Contact section - compact and fit to content */
 .section.contact-section {
-    height: 100vh !important;
     min-height: 100vh;
-    max-height: 100vh;
     justify-content: flex-start;
     padding: 5.5rem 2rem 1.5rem;
-    overflow: hidden;
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
     scroll-margin-top: 90px; /* Account for fixed navigation */
     display: flex;
     flex-direction: column;
 }
 
 .section.contact-section .container {
-    max-height: calc(100vh - 7rem);
-    height: 100%;
+    height: auto;
     padding: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
     flex: 1;
 }
 
@@ -1242,7 +1223,6 @@ body.dark-mode .submit-btn:hover {
     backdrop-filter: blur(10px);
     z-index: 1;
     min-height: auto;
-    scroll-snap-align: start;
     transition: background 0.3s ease;
 }
 
