@@ -1298,6 +1298,8 @@ body.dark-mode .footer p {
     
     .section {
         padding: 4rem 1rem;
+        min-height: auto;
+        justify-content: flex-start;
     }
     
     .services-section {
@@ -1413,6 +1415,8 @@ body.dark-mode .footer p {
     
     .section {
         padding: 3rem 1rem;
+        min-height: auto;
+        justify-content: flex-start;
     }
     
     .section-title {
@@ -1439,8 +1443,7 @@ body.dark-mode .footer p {
     }
     
     .services-scroll-container {
-        /* On smaller mobile, show 1.5 services */
-        max-height: 500px;
+        max-height: none;
     }
     
     .services-grid {
