@@ -1,20 +1,5 @@
-import os
-from io import BytesIO
-
-from django.core.files.base import ContentFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from PIL import Image
-
-try:
-    RESAMPLE_FILTER = Image.Resampling.LANCZOS  # Pillow ≥ 9
-except AttributeError:  # pragma: no cover - fallback for older Pillow
-    RESAMPLE_FILTER = Image.LANCZOS
-
-MAX_IMAGE_WIDTH = 1920
-MAX_IMAGE_HEIGHT = 1920
-JPEG_QUALITY = 85
-WEBP_QUALITY = 80
 
 
 class Hero(models.Model):
@@ -132,86 +117,6 @@ class PortfolioItem(models.Model):
             raise ValidationError({'url': _('URL is required for online portfolios.')})
         if self.portfolio_type == 'offline' and not self.offline_file:
             raise ValidationError({'offline_file': _('Offline file is required for offline portfolios.')})
-
-    def save(self, *args, **kwargs):
-        if self.image and getattr(self.image, '_file', None):
-            self._optimize_image()
-        super().save(*args, **kwargs)
-
-    def _optimize_image(self):
-        image_field = self.image
-        if not image_field:
-            return
-
-        image_file = getattr(image_field, 'file', None)
-        if not image_file:
-            return
-
-        image_file.seek(0)
-
-        try:
-            with Image.open(image_file) as img:
-                img_format = (img.format or '').upper()
-                has_transparency = img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info)
-
-                # Resize if bigger than the limits while preserving aspect ratio
-                if img.width > MAX_IMAGE_WIDTH or img.height > MAX_IMAGE_HEIGHT:
-                    img.thumbnail((MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT), RESAMPLE_FILTER)
-
-                buffer = BytesIO()
-
-                if img_format in ('JPEG', 'JPG'):
-                    if img.mode in ('RGBA', 'P', 'LA'):
-                        img = img.convert('RGB')
-                    img.save(
-                        buffer,
-                        format='JPEG',
-                        quality=JPEG_QUALITY,
-                        optimize=True,
-                        progressive=True,
-                    )
-                elif img_format == 'PNG':
-                    save_kwargs = {'optimize': True, 'compress_level': 6}
-                    if not has_transparency:
-                        # For PNG without transparency we can safely leverage JPEG to shrink further
-                        img = img.convert('RGB')
-                        img.save(
-                            buffer,
-                            format='JPEG',
-                            quality=JPEG_QUALITY,
-                            optimize=True,
-                            progressive=True,
-                        )
-                        base, _ = os.path.splitext(image_field.name)
-                        image_field.name = f"{base}.jpg"
-                    else:
-                        img.save(buffer, format='PNG', **save_kwargs)
-                elif img_format == 'WEBP':
-                    img.save(
-                        buffer,
-                        format='WEBP',
-                        quality=WEBP_QUALITY,
-                        method=6,
-                    )
-                else:
-                    if img.mode in ('RGBA', 'P', 'LA'):
-                        img = img.convert('RGB')
-                    img.save(
-                        buffer,
-                        format='JPEG',
-                        quality=JPEG_QUALITY,
-                        optimize=True,
-                        progressive=True,
-                    )
-                    base, _ = os.path.splitext(image_field.name)
-                    image_field.name = f"{base}.jpg"
-        except OSError:
-            image_file.seek(0)
-            return
-
-        buffer.seek(0)
-        image_field.save(image_field.name, ContentFile(buffer.read()), save=False)
-        buffer.close()
 
 
 class ContactInfo(models.Model):
