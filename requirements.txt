@@ -2,4 +2,5 @@ Django>=4.2.11
 django-modeltranslation>=0.18.12
 Pillow>=10.0.0
 python-decouple>=3.8
+whitenoise>=6.7.0
 
