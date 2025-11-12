@@ -1,0 +1,552 @@
+/* RTL and Persian Font Styles */
+body[dir="rtl"],
+html[dir="rtl"] body {
+    font-family: 'Vazirmatn', 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+
+/* Override scroll behavior for RTL */
+html[dir="rtl"] {
+    scroll-behavior: smooth;
+}
+
+/* Navigation RTL - Keep layout same as LTR but reverse menu items */
+html[dir="rtl"] .nav-container {
+    flex-direction: row; /* Keep same as LTR - logo on left, menu on right */
+    justify-content: space-between;
+}
+
+/* Keep logo-container always on left side in LTR direction */
+html[dir="rtl"] .logo-container {
+    direction: ltr;
+    flex-direction: row;
+    order: 1; /* Ensure it stays on left */
+}
+
+html[dir="rtl"] .nav-menu {
+    flex-direction: row-reverse; /* Reverse menu items order */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+html[dir="rtl"] .menu-toggle {
+    order: 3; /* Keep menu toggle on right */
+}
+
+html[dir="rtl"] .nav-controls {
+    order: 4; /* Keep nav controls on right */
+    direction: ltr; /* Keep controls in LTR direction */
+}
+
+/* Language Switcher RTL */
+html[dir="rtl"] .lang-switcher {
+    margin: 0; /* Remove margin, use gap instead */
+}
+
+html[dir="rtl"] .lang-switcher::after {
+    display: none; /* Remove underline for language switcher */
+}
+
+/* Text Alignment for RTL */
+html[dir="rtl"] .section-content,
+html[dir="rtl"] .text-block,
+html[dir="rtl"] .hero-content {
+    text-align: right;
+}
+
+html[dir="rtl"] .contact-section .section-content {
+    text-align: center;
+}
+
+/* Portfolio Grid RTL */
+html[dir="rtl"] .portfolio-overlay {
+    text-align: right;
+}
+
+/* Footer RTL */
+html[dir="rtl"] .footer {
+    text-align: center;
+}
+
+/* Hero Title - Keep centered */
+html[dir="rtl"] .hero-title,
+html[dir="rtl"] .hero-subtitle,
+html[dir="rtl"] .hero-description {
+    text-align: center;
+}
+
+/* Hide hero logo in Persian version */
+html[dir="rtl"] .hero-logo-container {
+    display: none;
+}
+
+/* Standardize font sizes for Persian */
+html[dir="rtl"] .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4rem) !important;
+    margin-bottom: 1.5rem;
+}
+
+html[dir="rtl"] .hero-subtitle {
+    font-size: clamp(1.25rem, 3vw, 1.75rem) !important;
+    margin-bottom: 1.5rem;
+}
+
+html[dir="rtl"] .hero-description {
+    font-size: clamp(1rem, 2vw, 1.1rem) !important;
+    line-height: 1.8;
+}
+
+html[dir="rtl"] .section-title {
+    font-size: clamp(2rem, 5vw, 3rem) !important;
+    margin-bottom: 2rem;
+}
+
+html[dir="rtl"] .text-block p {
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem) !important;
+    line-height: 2;
+}
+
+html[dir="rtl"] .portfolio-title {
+    font-size: 1.25rem !important;
+}
+
+html[dir="rtl"] .portfolio-description {
+    font-size: 0.95rem !important;
+}
+
+html[dir="rtl"] .contact-link {
+    font-size: 1.1rem !important;
+}
+
+html[dir="rtl"] .contact-section {
+    text-align: right;
+}
+
+html[dir="rtl"] .contact-wrapper {
+    direction: rtl;
+}
+
+html[dir="rtl"] .form-title {
+    text-align: right;
+}
+
+html[dir="rtl"] .form-group input,
+html[dir="rtl"] .form-group textarea {
+    text-align: right;
+    direction: rtl;
+}
+
+html[dir="rtl"] .form-group input::placeholder,
+html[dir="rtl"] .form-group textarea::placeholder {
+    text-align: right;
+}
+
+/* Better spacing for Persian version */
+html[dir="rtl"] .hero {
+    padding-top: 10rem;
+    min-height: 100vh;
+}
+
+html[dir="rtl"] .hero-content {
+    padding-top: 2rem;
+    max-width: 700px;
+}
+
+html[dir="rtl"] .section {
+    padding: 5rem 2rem;
+    min-height: 100vh;
+}
+
+html[dir="rtl"] .section.contact-section {
+    min-height: 100vh;
+    justify-content: flex-start;
+    padding: 5.5rem 2rem 1.5rem;
+    scroll-margin-top: 90px; /* Account for fixed navigation */
+    display: flex;
+    flex-direction: column;
+}
+
+html[dir="rtl"] .section.contact-section .container {
+    height: auto;
+    padding: 0;
+    flex: 1;
+}
+
+html[dir="rtl"] .contact-wrapper {
+    gap: 1.25rem;
+}
+
+html[dir="rtl"] .contact-info-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+@media (max-width: 968px) {
+    html[dir="rtl"] .section.contact-section {
+        padding: 5rem 1.5rem 1.5rem;
+        scroll-margin-top: 80px;
+    }
+    
+    html[dir="rtl"] .section.contact-section .container {
+        padding: 0;
+    }
+    
+    html[dir="rtl"] .contact-info-section {
+        height: auto;
+    }
+}
+
+/* Portfolio section exception for RTL */
+html[dir="rtl"] .section.portfolio-section {
+    min-height: 100vh;
+    justify-content: flex-start;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    overflow-y: visible;
+}
+
+html[dir="rtl"] .container {
+    padding: 0 1.5rem;
+}
+
+/* Section Titles */
+html[dir="rtl"] .section-title {
+    text-align: right;
+    margin-bottom: 2.5rem;
+}
+
+html[dir="rtl"] .portfolio-section {
+    background: transparent;
+    backdrop-filter: none;
+}
+
+html[dir="rtl"] .portfolio-section .section-title {
+    text-align: right;
+}
+
+/* Services Section RTL */
+html[dir="rtl"] .services-section {
+    background: transparent;
+    backdrop-filter: none;
+    padding-top: 6rem !important;
+    justify-content: flex-start;
+    scroll-margin-top: 90px;
+}
+
+html[dir="rtl"] body.dark-mode .services-section {
+    background: transparent;
+}
+
+html[dir="rtl"] .services-grid {
+    direction: rtl;
+}
+
+html[dir="rtl"] .service-card {
+    text-align: center;
+    direction: rtl;
+}
+
+html[dir="rtl"] .service-title {
+    text-align: center;
+    font-size: 1.5rem !important;
+}
+
+html[dir="rtl"] .service-description {
+    text-align: center;
+    font-size: 1rem !important;
+    line-height: 1.8;
+}
+
+/* Better Persian Font Rendering */
+html[dir="rtl"] body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Number Formatting for Persian */
+html[dir="rtl"] .footer p {
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+}
+
+/* RTL Adjustments for Navigation Links */
+html[dir="rtl"] .nav-link::after {
+    right: 0;
+    left: auto;
+}
+
+/* Scroll Indicator - Keep centered */
+html[dir="rtl"] .scroll-indicator {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+
+/* Contact Link */
+html[dir="rtl"] .contact-link::after {
+    right: 0;
+    left: auto;
+}
+
+/* Force LTR for phone numbers and emails in RTL */
+html[dir="rtl"] .contact-link[href^="tel:"],
+html[dir="rtl"] .contact-link[href^="mailto:"] {
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: embed;
+    display: inline-block;
+}
+
+/* Portfolio Items - Maintain visual consistency */
+html[dir="rtl"] .portfolio-overlay h3,
+html[dir="rtl"] .portfolio-overlay p {
+    text-align: right;
+}
+
+/* Dark Mode Styles for RTL */
+html[dir="rtl"] body.dark-mode {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-secondary) 100%);
+    color: var(--text-dark-mode);
+}
+
+html[dir="rtl"] body.dark-mode .nav {
+    background: rgba(10, 10, 21, 0.4);
+    border-bottom: 1px solid var(--border-dark);
+}
+
+html[dir="rtl"] body.dark-mode .nav-link {
+    color: var(--text-dark-mode);
+}
+
+html[dir="rtl"] body.dark-mode .section-title {
+    color: var(--text-dark-mode);
+}
+
+html[dir="rtl"] body.dark-mode .text-block p {
+    color: var(--text-dark-mode-secondary);
+}
+
+html[dir="rtl"] body.dark-mode .portfolio-section {
+    background: transparent;
+}
+
+html[dir="rtl"] body.dark-mode .portfolio-item-inner {
+    background: var(--card-bg-dark);
+    border: 1px solid var(--border-dark);
+}
+
+html[dir="rtl"] body.dark-mode .service-card {
+    background: rgba(31, 31, 46, 0.6);
+    border: 1px solid var(--border-dark);
+}
+
+html[dir="rtl"] body.dark-mode .service-title {
+    color: var(--text-dark-mode);
+}
+
+html[dir="rtl"] body.dark-mode .service-description {
+    color: var(--text-dark-mode-secondary);
+}
+
+html[dir="rtl"] body.dark-mode .glass-form {
+    background: rgba(31, 31, 46, 0.6);
+    border: 1px solid var(--border-dark);
+}
+
+html[dir="rtl"] body.dark-mode .contact-detail-item {
+    background: var(--card-bg-dark);
+    border: 1px solid var(--border-dark);
+}
+
+html[dir="rtl"] body.dark-mode .contact-link {
+    color: var(--light-blue);
+}
+
+html[dir="rtl"] body.dark-mode .footer {
+    background: var(--nav-bg-dark);
+    border-top: 1px solid var(--border-dark);
+}
+
+html[dir="rtl"] body.dark-mode .footer p {
+    color: var(--text-dark-mode-secondary);
+}
+
+/* Mobile Responsive for RTL */
+@media (max-width: 768px) {
+    html[dir="rtl"] .nav-menu {
+        flex-direction: column;
+        position: fixed;
+        left: 0;
+        transform: translateY(-100%);
+    }
+    
+    html[dir="rtl"] .nav-menu.active {
+        transform: translateY(0);
+    }
+    
+    html[dir="rtl"] .nav-container {
+        flex-direction: row; /* Keep same as desktop - logo on left */
+    }
+    
+    /* Keep logo-container in LTR position even in RTL */
+    html[dir="rtl"] .logo-container {
+        direction: ltr;
+        flex-direction: row;
+        gap: 0.5rem;
+        order: 1;
+    }
+    
+    html[dir="rtl"] .menu-toggle {
+        order: 2;
+    }
+    
+    html[dir="rtl"] .nav-controls {
+        order: 3;
+        gap: 0.5rem;
+    }
+    
+    html[dir="rtl"] .lang-switcher {
+        min-width: 38px;
+        width: auto;
+        height: 38px;
+        border-radius: 9px;
+        font-size: 0.75rem;
+        padding: 0 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    html[dir="rtl"] .hero {
+        padding: 6rem 1rem 2rem;
+    }
+    
+    html[dir="rtl"] .section {
+        padding: 4rem 1rem;
+    }
+    
+    html[dir="rtl"] .services-section {
+        padding-top: 5rem !important;
+        scroll-margin-top: 70px;
+    }
+    
+    html[dir="rtl"] .services-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    html[dir="rtl"] .service-card {
+        padding: 2rem;
+    }
+    
+    html[dir="rtl"] .service-icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 1.25rem;
+    }
+    
+    html[dir="rtl"] .service-icon svg {
+        width: 40px;
+        height: 40px;
+    }
+    
+    html[dir="rtl"] .service-title {
+        font-size: 1.25rem !important;
+    }
+    
+    html[dir="rtl"] .service-description {
+        font-size: 0.95rem !important;
+    }
+    
+    html[dir="rtl"] .dark-mode-toggle {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+    }
+    
+    html[dir="rtl"] .dark-mode-toggle svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    html[dir="rtl"] .nav-controls {
+        gap: 0.4rem;
+    }
+    
+    html[dir="rtl"] .dark-mode-toggle {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+    }
+    
+    html[dir="rtl"] .dark-mode-toggle svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    html[dir="rtl"] .lang-switcher {
+        min-width: 36px;
+        width: auto;
+        height: 36px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        padding: 0 0.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    html[dir="rtl"] .hero {
+        padding: 5rem 1rem 1.5rem;
+    }
+    
+    html[dir="rtl"] .section {
+        padding: 3rem 1rem;
+    }
+    
+    html[dir="rtl"] .services-section {
+        padding-top: 4.5rem !important;
+        scroll-margin-top: 60px;
+    }
+    
+    html[dir="rtl"] .services-grid {
+        gap: 1.25rem;
+    }
+    
+    html[dir="rtl"] .service-card {
+        padding: 1.75rem;
+    }
+    
+    html[dir="rtl"] .service-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1rem;
+    }
+    
+    html[dir="rtl"] .service-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+    
+    html[dir="rtl"] .service-title {
+        font-size: 1.1rem !important;
+        margin-bottom: 0.75rem;
+    }
+    
+    html[dir="rtl"] .service-description {
+        font-size: 0.9rem !important;
+        line-height: 1.7;
+    }
+    
+    html[dir="rtl"] .section.contact-section {
+        padding: 4rem 1rem 1.5rem;
+    }
+}
+
