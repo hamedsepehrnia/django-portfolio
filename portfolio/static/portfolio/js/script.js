@@ -3,83 +3,6 @@ let scene, camera, renderer, starfield;
 let starsGeometry, starsMaterial, stars;
 let velocities = null;
 
-// Lazy Loading for Backgrounds and Images
-function initLazyLoading() {
-    const lazyBackgrounds = document.querySelectorAll('.lazy-bg[data-bg]');
-    const lazyImages = document.querySelectorAll('img[data-src], img[data-srcset]');
-    if (!lazyBackgrounds.length && !lazyImages.length) {
-        return;
-    }
-    const observerConfig = {
-        root: null,
-        rootMargin: '0px 0px 200px 0px',
-        threshold: 0.01
-    };
-
-    const loadBackground = (element) => {
-        const bgUrl = element.dataset.bg;
-        if (!bgUrl) {
-            return;
-        }
-        const image = new Image();
-        image.src = bgUrl;
-        image.onload = () => {
-            element.style.backgroundImage = `url("${bgUrl}")`;
-            element.classList.add('lazy-loaded');
-        };
-        image.onerror = () => {
-            element.classList.add('lazy-error');
-        };
-        element.removeAttribute('data-bg');
-    };
-
-    const loadImage = (imageEl) => {
-        const { src: currentSrc } = imageEl;
-        const dataSrc = imageEl.dataset.src;
-        const dataSrcSet = imageEl.dataset.srcset;
-
-        if (dataSrcSet) {
-            imageEl.srcset = dataSrcSet;
-            imageEl.removeAttribute('data-srcset');
-        }
-        if (dataSrc) {
-            if (!currentSrc) {
-                imageEl.src = dataSrc;
-            } else {
-                imageEl.setAttribute('src', dataSrc);
-            }
-            imageEl.removeAttribute('data-src');
-        }
-        imageEl.classList.add('lazy-loaded');
-    };
-
-    if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries, entryObserver) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting && entry.intersectionRatio <= 0) {
-                    return;
-                }
-
-                const target = entry.target;
-
-                if (target.dataset && target.dataset.bg) {
-                    loadBackground(target);
-                } else if (target.dataset && (target.dataset.src || target.dataset.srcset)) {
-                    loadImage(target);
-                }
-
-                entryObserver.unobserve(target);
-            });
-        }, observerConfig);
-
-        lazyBackgrounds.forEach((bg) => observer.observe(bg));
-        lazyImages.forEach((img) => observer.observe(img));
-    } else {
-        lazyBackgrounds.forEach(loadBackground);
-        lazyImages.forEach(loadImage);
-    }
-}
-
 // GSAP Animation Setup (will be registered when available)
 let gsapReady = false;
 
@@ -733,16 +656,5 @@ function initContactForm() {
             // Success/error messages will be shown by Django messages framework
         });
     }
-}
-
-const initLazyLoadingWhenReady = () => {
-    document.removeEventListener('DOMContentLoaded', initLazyLoadingWhenReady);
-    initLazyLoading();
-};
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLazyLoadingWhenReady);
-} else {
-    initLazyLoading();
 }
 
