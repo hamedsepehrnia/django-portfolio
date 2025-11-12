@@ -845,6 +845,33 @@ body.dark-mode .portfolio-section {
     opacity: 0.9;
 }
 
+@media (hover: none) and (pointer: coarse) {
+    .portfolio-item {
+        cursor: default;
+        transform: none;
+        opacity: 1;
+    }
+
+    .portfolio-item-inner {
+        transform: none !important;
+        box-shadow: 0 8px 24px rgba(0, 80, 255, 0.18);
+    }
+
+    .portfolio-overlay {
+        transform: translateY(0);
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35), transparent);
+    }
+
+    .portfolio-item:hover .portfolio-item-inner {
+        transform: none;
+        box-shadow: 0 10px 28px rgba(0, 80, 255, 0.22);
+    }
+
+    .portfolio-item:hover .portfolio-overlay {
+        transform: translateY(0);
+    }
+}
+
 /* Contact Section */
 .contact-section {
     text-align: left;
