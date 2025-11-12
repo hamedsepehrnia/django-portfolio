@@ -70,7 +70,7 @@
                     <div class="portfolio-link">
                     {% endif %}
                         <div class="portfolio-item-inner">
-                            <div class="portfolio-image" {% if item.image %}style="background-image: url('{{ item.image.url }}');"{% endif %}></div>
+                            <div class="portfolio-image lazy-bg"{% if item.image %} data-bg="{{ item.image.url }}"{% endif %}></div>
                             <div class="portfolio-overlay">
                                 <h3 class="portfolio-title">{{ item.title }}</h3>
                                 <p class="portfolio-description">{{ item.description }}</p>
