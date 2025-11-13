@@ -213,8 +213,8 @@ msgid "EN"
 msgstr "انگلیسی"
 
 #: portfolio/templates/portfolio/base.html:129
-msgid "SkyPardaz. All rights reserved."
-msgstr "اسکای پرداز. تمامی حقوق محفوظ است."
+msgid "All rights reserved by Sepehrnova."
+msgstr "تمامی حقوق متعلق به سپهرنوا است."
 
 #: portfolio/templates/portfolio/index.html:28
 msgid "About Us"
