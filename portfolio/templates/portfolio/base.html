@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% trans "SkyPardaz - Creative Studio" %}{% endblock %}</title>
+    <title>{% block title %}{% if site_title %}{{ site_title }}{% else %}{% trans "SkyPardaz - Creative Studio" %}{% endif %}{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {% if LANGUAGE_CODE == 'fa' %}

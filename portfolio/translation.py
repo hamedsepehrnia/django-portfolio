@@ -1,5 +1,5 @@
 from modeltranslation.translator import register, TranslationOptions
-from .models import Hero, About, Service, PortfolioItem, ContactInfo
+from .models import Hero, About, Service, PortfolioItem, ContactInfo, SiteSetting
 
 
 @register(Hero)
@@ -25,4 +25,9 @@ class PortfolioItemTranslationOptions(TranslationOptions):
 @register(ContactInfo)
 class ContactInfoTranslationOptions(TranslationOptions):
     fields = ()  # Email and phone don't need translation
+
+
+@register(SiteSetting)
+class SiteSettingTranslationOptions(TranslationOptions):
+    fields = ('site_title',)
 

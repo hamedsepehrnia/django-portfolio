@@ -214,6 +214,21 @@ class PortfolioItem(models.Model):
         buffer.close()
 
 
+class SiteSetting(models.Model):
+    """Global site settings"""
+    site_title = models.CharField(max_length=200, verbose_name=_("Site Title"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
+
+    class Meta:
+        verbose_name = _("Site Setting")
+        verbose_name_plural = _("Site Settings")
+        ordering = ['-updated_at', '-id']
+
+    def __str__(self):
+        return self.site_title or _("Site Setting")
+
+
 class ContactInfo(models.Model):
     """Contact information"""
     email = models.EmailField(verbose_name=_("Email"))

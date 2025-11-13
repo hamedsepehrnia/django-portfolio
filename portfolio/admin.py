@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin
-from .models import Hero, About, Service, PortfolioItem, ContactInfo, ContactMessage
+from .models import Hero, About, Service, PortfolioItem, ContactInfo, ContactMessage, SiteSetting
 
 
 @admin.register(Hero)
@@ -73,3 +73,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_editable = ['is_read']
     date_hierarchy = 'created_at'
     fields = ['name', 'email', 'subject', 'message', 'created_at', 'is_read']
+
+
+@admin.register(SiteSetting)
+class SiteSettingAdmin(TranslationAdmin):
+    list_display = ['site_title', 'is_active', 'updated_at']
+    list_filter = ['is_active']
