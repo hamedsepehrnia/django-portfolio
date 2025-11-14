@@ -143,11 +143,35 @@ msgstr "ایمیل"
 msgid "Phone"
 msgstr "تلفن"
 
-#: portfolio/models.py:129 portfolio/models.py:130
+#: portfolio/models.py:126
+msgid "Telegram URL"
+msgstr "آدرس تلگرام"
+
+#: portfolio/models.py:127
+msgid "Instagram URL"
+msgstr "آدرس اینستاگرام"
+
+#: portfolio/templates/portfolio/index.html:118
+msgid "Telegram"
+msgstr "تلگرام"
+
+#: portfolio/templates/portfolio/index.html:119
+msgid "Join us on Telegram"
+msgstr "در تلگرام همراه ما باشید"
+
+#: portfolio/templates/portfolio/index.html:123
+msgid "Instagram"
+msgstr "اینستاگرام"
+
+#: portfolio/templates/portfolio/index.html:124
+msgid "Follow us on Instagram"
+msgstr "در اینستاگرام همراه ما باشید"
+
+#: portfolio/models.py:131 portfolio/models.py:132
 msgid "Contact Info"
 msgstr "اطلاعات تماس"
 
-#: portfolio/models.py:138 portfolio/templates/portfolio/index.html:129
+#: portfolio/models.py:140 portfolio/templates/portfolio/index.html:129
 msgid "Name"
 msgstr "نام"
 

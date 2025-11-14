@@ -548,5 +548,58 @@ html[dir="rtl"] body.dark-mode .footer p {
     html[dir="rtl"] .section.contact-section {
         padding: 4rem 1rem 1.5rem;
     }
+
+/* Team Showcase RTL adjustments */
+html[dir="rtl"] .team-showcase {
+    align-items: stretch;
+}
+
+html[dir="rtl"] .team-showcase-header {
+    text-align: right;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateY(24px);
+}
+
+html[dir="rtl"] .team-showcase-title,
+html[dir="rtl"] .team-showcase-subtitle {
+    text-align: right;
+}
+
+html[dir="rtl"] .team-row {
+    direction: rtl;
+}
+
+html[dir="rtl"] .team-card {
+    direction: rtl;
+}
+
+html[dir="rtl"] .team-card-body {
+    align-items: center;
+    text-align: center;
+}
+
+html[dir="rtl"] .team-name,
+html[dir="rtl"] .team-role,
+html[dir="rtl"] .team-bio {
+    text-align: center;
+}
+
+html[dir="rtl"] .team-role {
+    letter-spacing: normal;
+}
+
+html[dir="rtl"] .team-social {
+    justify-content: flex-start;
+}
+
+html[dir="rtl"] .team-social-pill {
+    letter-spacing: 0.08em;
+}
+
+html[dir="rtl"] .team-empty-card p {
+    text-align: center;
+}
+
 }
 

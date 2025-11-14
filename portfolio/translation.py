@@ -1,5 +1,5 @@
 from modeltranslation.translator import register, TranslationOptions
-from .models import Hero, About, Service, PortfolioItem, ContactInfo, SiteSetting
+from .models import Hero, About, TeamSection, TeamMember, Service, PortfolioItem, ContactInfo, SiteSetting
 
 
 @register(Hero)
@@ -10,6 +10,16 @@ class HeroTranslationOptions(TranslationOptions):
 @register(About)
 class AboutTranslationOptions(TranslationOptions):
     fields = ('title', 'content')
+
+
+@register(TeamMember)
+class TeamMemberTranslationOptions(TranslationOptions):
+    fields = ('name', 'role', 'bio')
+
+
+@register(TeamSection)
+class TeamSectionTranslationOptions(TranslationOptions):
+    fields = ('title', 'subtitle')
 
 
 @register(Service)

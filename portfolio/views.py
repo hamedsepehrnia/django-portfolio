@@ -5,7 +5,7 @@ from django.http import FileResponse, Http404
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 import os
-from .models import Hero, About, Service, PortfolioItem, ContactInfo, ContactMessage
+from .models import Hero, About, TeamSection, TeamMember, Service, PortfolioItem, ContactInfo, ContactMessage
 
 
 def index(request):
@@ -13,6 +13,8 @@ def index(request):
     # Get active content (modeltranslation handles language automatically)
     heroes = Hero.objects.filter(is_active=True)
     about_items = About.objects.filter(is_active=True)
+    team_section = TeamSection.objects.filter(is_active=True).first()
+    team_members = TeamMember.objects.filter(is_active=True)
     services = Service.objects.filter(is_active=True)
     portfolio_items = PortfolioItem.objects.filter(is_active=True)
     contact_info = ContactInfo.objects.filter(is_active=True)
@@ -20,6 +22,8 @@ def index(request):
     context = {
         'heroes': heroes,
         'about_items': about_items,
+        'team_section': team_section,
+        'team_members': team_members,
         'services': services,
         'portfolio_items': portfolio_items,
         'contact_info': contact_info,

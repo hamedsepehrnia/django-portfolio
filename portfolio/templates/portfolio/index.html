@@ -24,13 +24,87 @@
     <!-- About Section -->
     <section id="about" class="section about-section">
         <div class="container">
-            <div class="section-content">
+            <div class="section-content about-section-content">
                 <h2 class="section-title">{% trans "About Us" %}</h2>
+
                 {% for about in about_items %}
                 <div class="text-block">
                     <p>{{ about.content }}</p>
                 </div>
+                {% empty %}
+                <div class="text-block">
+                    <p>{% trans "We are crafting something special. Check back soon for more details about our studio." %}</p>
+                </div>
                 {% endfor %}
+
+                {% if team_members %}
+                <div class="team-showcase">
+                    <div class="team-showcase-header">
+                        <h3 class="team-showcase-title">
+                            {% if team_section and team_section.title %}
+                                {{ team_section.title }}
+                            {% else %}
+                                {% trans "Our Team" %}
+                            {% endif %}
+                        </h3>
+                        {% if team_section and team_section.subtitle %}
+                        <p class="team-showcase-subtitle">{{ team_section.subtitle }}</p>
+                        {% else %}
+                        <p class="team-showcase-subtitle">
+                            {% trans "Meet the creators shaping every pixel, interaction, and experience at SkyPardaz." %}
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="team-row">
+                        {% for member in team_members %}
+                        <article class="team-card">
+                            <div class="team-card-media">
+                                {% if member.photo %}
+                                <div class="team-avatar has-image">
+                                    <img src="{{ member.photo.url }}" loading="lazy" alt="{% blocktrans with name=member.name %}{{ name }}{% endblocktrans %}">
+                                </div>
+                                {% else %}
+                                <div class="team-avatar">
+                                    <span class="team-avatar-initial">{{ member.name|default_if_none:''|slice:":1"|upper }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="team-card-body">
+                                <h3 class="team-name">{{ member.name }}</h3>
+                                {% if member.role %}
+                                <p class="team-role">{{ member.role }}</p>
+                                {% endif %}
+                                {% if member.bio %}
+                                <p class="team-bio">{{ member.bio }}</p>
+                                {% endif %}
+                            </div>
+                            {% if member.linkedin_url or member.instagram_url or member.github_url %}
+                            <div class="team-card-footer">
+                                <div class="team-social">
+                                    {% if member.linkedin_url %}
+                                    <a href="{{ member.linkedin_url }}" class="team-social-link" target="_blank" rel="noopener noreferrer" aria-label="{% blocktrans with name=member.name %}LinkedIn profile of {{ name }}{% endblocktrans %}">
+                                        <span class="team-social-pill">in</span>
+                                    </a>
+                                    {% endif %}
+                                    {% if member.instagram_url %}
+                                    <a href="{{ member.instagram_url }}" class="team-social-link" target="_blank" rel="noopener noreferrer" aria-label="{% blocktrans with name=member.name %}Instagram profile of {{ name }}{% endblocktrans %}">
+                                        <span class="team-social-pill">@</span>
+                                    </a>
+                                    {% endif %}
+                                    {% if member.github_url %}
+                                    <a href="{{ member.github_url }}" class="team-social-link" target="_blank" rel="noopener noreferrer" aria-label="{% blocktrans with name=member.name %}GitHub profile of {{ name }}{% endblocktrans %}">
+                                        <span class="team-social-pill">{</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </article>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </section>
@@ -105,19 +179,56 @@
                         {% if contact_info %}
                         {% with contact=contact_info|first %}
                         <div class="contact-detail-item">
-                            <div class="contact-icon">✉</div>
+                            <div class="contact-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3.5" y="5.5" width="17" height="13" rx="3"/>
+                                    <path d="M4 7l8 5 8-5"/>
+                                </svg>
+                            </div>
                             <div class="contact-detail-content">
                                 <h3>{% trans "Email" %}</h3>
                                 <a href="mailto:{{ contact.email }}" class="contact-link" {% if LANGUAGE_CODE == 'fa' %}dir="ltr"{% endif %}>{{ contact.email }}</a>
                             </div>
                         </div>
                         <div class="contact-detail-item">
-                            <div class="contact-icon">📞</div>
+                            <div class="contact-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6.5 3h2.3c.5 0 .9.3 1 .8l.7 3c.1.4 0 .9-.3 1.2l-1.6 1.6c1 1.9 2.6 3.5 4.5 4.5l1.6-1.6c.3-.3.8-.4 1.2-.3l3 0.7c.5.1.8.5.8 1v2.3c0 .6-.4 1-1 1-8.3 0-15-6.7-15-15 0-.6.4-1 1-1Z"/>
+                                </svg>
+                            </div>
                             <div class="contact-detail-content">
                                 <h3>{% trans "Phone" %}</h3>
                                 <a href="tel:{{ contact.phone }}" class="contact-link" {% if LANGUAGE_CODE == 'fa' %}dir="ltr"{% endif %}>{{ contact.phone }}</a>
                             </div>
                         </div>
+                        {% if contact.telegram_url %}
+                        <div class="contact-detail-item">
+                            <div class="contact-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 3L3 10.27l6.63 2.36M21 3l-8.54 15.08-2.83-5.45M10.04 12.55l-1.5 4.95 3.29-2.3"/>
+                                </svg>
+                            </div>
+                            <div class="contact-detail-content">
+                                <h3>{% trans "Telegram" %}</h3>
+                                <a href="{{ contact.telegram_url }}" class="contact-link" target="_blank" rel="noopener noreferrer">{% trans "Join us on Telegram" %}</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if contact.instagram_url %}
+                        <div class="contact-detail-item">
+                            <div class="contact-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="4" y="4" width="16" height="16" rx="4"/>
+                                    <path d="M16 11.37a4 4 0 1 1-7.999.001A4 4 0 0 1 16 11.37Z"/>
+                                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                                </svg>
+                            </div>
+                            <div class="contact-detail-content">
+                                <h3>{% trans "Instagram" %}</h3>
+                                <a href="{{ contact.instagram_url }}" class="contact-link" target="_blank" rel="noopener noreferrer">{% trans "Follow us on Instagram" %}</a>
+                            </div>
+                        </div>
+                        {% endif %}
                         {% endwith %}
                         {% endif %}
                     </div>

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin
-from .models import Hero, About, Service, PortfolioItem, ContactInfo, ContactMessage, SiteSetting
+from .models import Hero, About, TeamSection, TeamMember, Service, PortfolioItem, ContactInfo, ContactMessage, SiteSetting
 
 
 @admin.register(Hero)
@@ -17,6 +17,21 @@ class AboutAdmin(TranslationAdmin):
     list_filter = ['is_active']
     search_fields = ['title', 'content']
     ordering = ['order', 'id']
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(TranslationAdmin):
+    list_display = ['name', 'role', 'order', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'role', 'bio']
+    ordering = ['order', 'id']
+
+
+@admin.register(TeamSection)
+class TeamSectionAdmin(TranslationAdmin):
+    list_display = ['title', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['title', 'subtitle']
 
 
 @admin.register(Service)
@@ -59,7 +74,7 @@ class PortfolioItemAdmin(TranslationAdmin):
 
 @admin.register(ContactInfo)
 class ContactInfoAdmin(admin.ModelAdmin):
-    list_display = ['email', 'phone', 'is_active']
+    list_display = ['email', 'phone', 'telegram_url', 'instagram_url', 'is_active']
     list_filter = ['is_active']
 
 

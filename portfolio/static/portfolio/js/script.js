@@ -455,6 +455,39 @@ function initGSAPAnimations() {
             }
         });
     });
+
+    // Team Card Animations
+    gsap.utils.toArray('.team-card').forEach((card, index) => {
+        gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            duration: 0.85,
+            ease: 'power3.out',
+            delay: index * 0.12,
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 85%',
+                end: 'top 55%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+
+    // Team Showcase Header Animation
+    gsap.utils.toArray('.team-showcase-header').forEach((header) => {
+        gsap.to(header, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: header,
+                start: 'top 85%',
+                end: 'top 60%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
     
     // Contact Section Animations
     gsap.to('.contact-info-section', {

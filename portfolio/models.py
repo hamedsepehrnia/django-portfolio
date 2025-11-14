@@ -58,6 +58,49 @@ class About(models.Model):
         return str(self.id) if self.id else "New"
 
 
+class TeamSection(models.Model):
+    """Configurable copy for the team showcase"""
+    title = models.CharField(max_length=200, blank=True, null=True, verbose_name=_("Title"))
+    subtitle = models.TextField(blank=True, null=True, verbose_name=_("Subtitle"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+
+    class Meta:
+        verbose_name = _("Team Section")
+        verbose_name_plural = _("Team Sections")
+
+    def __str__(self):
+        if hasattr(self, 'title_en') and self.title_en:
+            return self.title_en
+        if hasattr(self, 'title_fa') and self.title_fa:
+            return self.title_fa
+        return self.title or _("Team Section")
+
+
+class TeamMember(models.Model):
+    """Team member information"""
+    name = models.CharField(max_length=120, verbose_name=_("Name"))
+    role = models.CharField(max_length=200, blank=True, null=True, verbose_name=_("Role"))
+    bio = models.TextField(blank=True, null=True, verbose_name=_("Bio"))
+    photo = models.ImageField(upload_to='team/', blank=True, null=True, verbose_name=_("Photo"))
+    linkedin_url = models.URLField(blank=True, null=True, verbose_name=_("LinkedIn URL"))
+    instagram_url = models.URLField(blank=True, null=True, verbose_name=_("Instagram URL"))
+    github_url = models.URLField(blank=True, null=True, verbose_name=_("GitHub URL"))
+    order = models.IntegerField(default=0, verbose_name=_("Order"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+
+    class Meta:
+        verbose_name = _("Team Member")
+        verbose_name_plural = _("Team Members")
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        if hasattr(self, 'name_en') and self.name_en:
+            return self.name_en
+        if hasattr(self, 'name_fa') and self.name_fa:
+            return self.name_fa
+        return self.name or _("Team Member")
+
+
 class Service(models.Model):
     """Service items"""
     title = models.CharField(max_length=200, blank=True, null=True, verbose_name=_("Title"))
@@ -233,6 +276,8 @@ class ContactInfo(models.Model):
     """Contact information"""
     email = models.EmailField(verbose_name=_("Email"))
     phone = models.CharField(max_length=20, verbose_name=_("Phone"))
+    telegram_url = models.URLField(blank=True, null=True, verbose_name=_("Telegram URL"))
+    instagram_url = models.URLField(blank=True, null=True, verbose_name=_("Instagram URL"))
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     
     class Meta:
