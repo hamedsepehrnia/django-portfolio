@@ -552,10 +552,29 @@ function initCursorTrail() {
     let trailX = 0;
     let trailY = 0;
     
+    // Check if device is mobile
+    const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+    let hideTimeout = null;
+    
+    const resetHideTimer = () => {
+        if (isMobile) {
+            // Clear existing timer
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+            }
+            // Set new timer to hide after 3 seconds of inactivity
+            hideTimeout = setTimeout(() => {
+                trail.classList.remove('active');
+            }, 3000);
+        }
+    };
+    
     document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
         trail.classList.add('active');
+        // Reset hide timer on mouse movement (mobile only)
+        resetHideTimer();
     });
     
     function updateTrail() {
@@ -570,6 +589,10 @@ function initCursorTrail() {
     
     document.addEventListener('mouseleave', () => {
         trail.classList.remove('active');
+        // Clear timer when mouse leaves
+        if (hideTimeout) {
+            clearTimeout(hideTimeout);
+        }
     });
 }
 
@@ -586,6 +609,7 @@ function onWindowResize() {
 function initNavigationScroll() {
     const nav = document.querySelector('.nav');
     const getNavOffset = () => (nav ? nav.offsetHeight : 0);
+    const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
     
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -599,8 +623,19 @@ function initNavigationScroll() {
             
             e.preventDefault();
             
+            // Close mobile menu immediately (before scroll starts) to remove delay
+            if (isMobile) {
+                const menuToggle = document.querySelector('.menu-toggle');
+                const navMenu = document.querySelector('.nav-menu');
+                if (menuToggle && navMenu) {
+                    menuToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            }
+            
             const offset = getNavOffset();
             
+            // Start scroll immediately without waiting for menu animation
             if (typeof gsap !== 'undefined' && typeof ScrollToPlugin !== 'undefined') {
                 gsap.to(window, {
                     duration: 1.2,
@@ -608,7 +643,8 @@ function initNavigationScroll() {
                         y: target,
                         offsetY: offset
                     },
-                    ease: 'power2.inOut'
+                    ease: 'power2.inOut',
+                    immediateRender: true // Start immediately
                 });
             } else {
                 const targetTop = target.getBoundingClientRect().top + window.pageYOffset - offset;
