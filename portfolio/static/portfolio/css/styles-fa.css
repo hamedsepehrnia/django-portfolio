@@ -148,12 +148,12 @@ html[dir="rtl"] .form-group textarea::placeholder {
 
 /* Better spacing for Persian version */
 html[dir="rtl"] .hero {
-    padding-top: 10rem;
+    padding: 8rem 1.5rem 3rem;
     min-height: 100vh;
 }
 
 html[dir="rtl"] .hero-content {
-    padding-top: 2rem;
+    padding-top: 1rem;
     max-width: 700px;
 }
 
@@ -425,7 +425,8 @@ html[dir="rtl"] body.dark-mode .footer p {
     }
     
     html[dir="rtl"] .hero {
-        padding: 6rem 1rem 2rem;
+        min-height: calc(100vh - 70px);
+        padding: 6rem 1.25rem 3rem;
     }
     
     html[dir="rtl"] .section {
@@ -506,7 +507,8 @@ html[dir="rtl"] body.dark-mode .footer p {
     }
     
     html[dir="rtl"] .hero {
-        padding: 5rem 1rem 1.5rem;
+        min-height: calc(100vh - 70px);
+        padding: 5.5rem 1rem 2.25rem;
     }
     
     html[dir="rtl"] .section {
