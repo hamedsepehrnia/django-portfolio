@@ -423,7 +423,11 @@ body.dark-mode .lang-switcher:hover {
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 400;
     font-family: 'Poppins', 'Inter', 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* گرادیانت بر اساس رنگ‌های لوگو (کمرنگ‌تر) */
+    background: linear-gradient(135deg, #2a5ef0, #2a8ef0);
+    /* تنظیمات رنگ قبلی (کامنت شده):
     background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+    */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -433,7 +437,11 @@ body.dark-mode .lang-switcher:hover {
 }
 
 body.dark-mode .hero-title {
+    /* گرادیانت بر اساس رنگ‌های لوگو (برای حالت تاریک - کمرنگ‌تر) */
+    background: linear-gradient(135deg, #2a8ef0, #2a5ef0);
+    /* تنظیمات رنگ قبلی (کامنت شده):
     background: linear-gradient(135deg, var(--light-blue), var(--primary-blue));
+    */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
