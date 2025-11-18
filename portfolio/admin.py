@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin
-from .models import Hero, About, TeamSection, TeamMember, Service, PortfolioItem, ContactInfo, ContactMessage, SiteSetting
+from .models import Hero, About, TeamSection, TeamMember, Service, Technology, PortfolioItem, ContactInfo, ContactMessage, SiteSetting
 
 
 @admin.register(Hero)
@@ -42,6 +42,15 @@ class ServiceAdmin(TranslationAdmin):
     ordering = ['order', 'id']
 
 
+@admin.register(Technology)
+class TechnologyAdmin(admin.ModelAdmin):
+    list_display = ['name', 'order', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name']
+    ordering = ['order', 'name']
+    list_editable = ['order', 'is_active']
+
+
 @admin.register(PortfolioItem)
 class PortfolioItemAdmin(TranslationAdmin):
     list_display = ['title', 'portfolio_type', 'order', 'is_active']
@@ -55,6 +64,9 @@ class PortfolioItemAdmin(TranslationAdmin):
         (_('Portfolio Type'), {
             'fields': ('portfolio_type',)
         }),
+        (_('Technologies'), {
+            'fields': ('technologies',),
+        }),
         (_('Online Portfolio'), {
             'fields': ('url',),
             'classes': ('online-fields',),
@@ -64,6 +76,7 @@ class PortfolioItemAdmin(TranslationAdmin):
             'classes': ('offline-fields',),
         }),
     )
+    filter_horizontal = ['technologies']
     
     class Media:
         js = ('admin/js/portfolio_admin.js',)

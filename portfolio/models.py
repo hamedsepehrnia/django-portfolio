@@ -123,6 +123,21 @@ class Service(models.Model):
         return str(self.id) if self.id else "New"
 
 
+class Technology(models.Model):
+    """Technologies used in portfolio items"""
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
+    order = models.IntegerField(default=0, verbose_name=_("Order"))
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+    
+    class Meta:
+        verbose_name = _("Technology")
+        verbose_name_plural = _("Technologies")
+        ordering = ['order', 'name']
+    
+    def __str__(self):
+        return self.name
+
+
 class PortfolioItem(models.Model):
     """Portfolio items"""
     PORTFOLIO_TYPE_CHOICES = [
@@ -149,6 +164,7 @@ class PortfolioItem(models.Model):
         verbose_name=_("Offline File"), 
         help_text=_("Upload ZIP file containing the complete website (only for offline portfolios)")
     )
+    technologies = models.ManyToManyField(Technology, blank=True, verbose_name=_("Technologies"))
     order = models.IntegerField(default=0, verbose_name=_("Order"))
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
     

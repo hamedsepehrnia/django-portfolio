@@ -148,10 +148,12 @@
                             <div class="portfolio-overlay">
                                 <h3 class="portfolio-title">{{ item.title }}</h3>
                                 <p class="portfolio-description">{{ item.description }}</p>
-                                {% if item.portfolio_type == 'online' %}
-                                <span class="portfolio-badge">{% trans "Online" %}</span>
-                                {% elif item.portfolio_type == 'offline' %}
-                                <span class="portfolio-badge">{% trans "Offline" %}</span>
+                                {% if item.technologies.all %}
+                                <div class="portfolio-technologies">
+                                    {% for tech in item.technologies.all %}
+                                    <span class="portfolio-tech-tag">{{ tech.name }}</span>
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
