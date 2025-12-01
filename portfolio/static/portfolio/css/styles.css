@@ -493,6 +493,10 @@ body.dark-mode .hero-title {
     position: fixed;
 }
 
+.page-next-button:focus {
+    outline: none;
+}
+
 .page-next-button::before {
     content: "";
     width: 0;
