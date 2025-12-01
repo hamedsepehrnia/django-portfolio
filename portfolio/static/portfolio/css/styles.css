@@ -497,7 +497,8 @@ body.dark-mode .hero-title {
 .page-next-button:focus,
 .page-next-button:focus-visible,
 .page-next-button:active {
-    outline: none;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .page-next-button::before {
@@ -1884,6 +1885,12 @@ body.dark-mode .footer p {
         min-height: auto;
         padding: 3.5rem 1.25rem;
         justify-content: flex-start;
+    }
+
+    .page-next-button {
+        width: 54px;
+        height: 54px;
+        bottom: 2.5rem;
     }
 
     .section .container {
