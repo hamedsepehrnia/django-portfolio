@@ -82,6 +82,12 @@ body.dark-mode {
     opacity: 0.6;
 }
 
+@media (hover: none) and (pointer: coarse) {
+    .cursor-trail {
+        display: none;
+    }
+}
+
 /* Navigation */
 .nav {
     position: fixed;
