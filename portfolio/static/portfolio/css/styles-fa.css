@@ -6,9 +6,16 @@ html[dir="rtl"] body {
     text-align: right;
 }
 
-/* Override scroll behavior for RTL */
 html[dir="rtl"] {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html[dir="rtl"]::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 /* Navigation RTL - Keep layout same as LTR but reverse menu items */
@@ -378,6 +385,12 @@ html[dir="rtl"] body.dark-mode .footer p {
     color: var(--text-dark-mode-secondary);
 }
 
+html[dir="rtl"] .page-next-button {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 /* Mobile Responsive for RTL */
 @media (max-width: 768px) {
     html[dir="rtl"] .nav-menu {
@@ -445,6 +458,7 @@ html[dir="rtl"] body.dark-mode .footer p {
     
     html[dir="rtl"] .service-card {
         padding: 2rem;
+        text-align: right;
     }
     
     html[dir="rtl"] .service-icon {
@@ -460,10 +474,12 @@ html[dir="rtl"] body.dark-mode .footer p {
     
     html[dir="rtl"] .service-title {
         font-size: 1.25rem !important;
+        text-align: right;
     }
     
     html[dir="rtl"] .service-description {
         font-size: 0.95rem !important;
+        text-align: right;
     }
     
     html[dir="rtl"] .dark-mode-toggle {
@@ -526,6 +542,7 @@ html[dir="rtl"] body.dark-mode .footer p {
     
     html[dir="rtl"] .service-card {
         padding: 1.75rem;
+        text-align: right;
     }
     
     html[dir="rtl"] .service-icon {
@@ -542,11 +559,13 @@ html[dir="rtl"] body.dark-mode .footer p {
     html[dir="rtl"] .service-title {
         font-size: 1.1rem !important;
         margin-bottom: 0.75rem;
+        text-align: right;
     }
     
     html[dir="rtl"] .service-description {
         font-size: 0.9rem !important;
         line-height: 1.7;
+        text-align: right;
     }
     
     html[dir="rtl"] .section.contact-section {

@@ -6,9 +6,16 @@ html[dir="rtl"] body {
     text-align: right;
 }
 
-/* Override scroll behavior for RTL */
 html[dir="rtl"] {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html[dir="rtl"]::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 /* Navigation RTL - Keep layout same as LTR but reverse menu items */

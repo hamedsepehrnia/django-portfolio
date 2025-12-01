@@ -27,8 +27,16 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 body {
@@ -464,6 +472,99 @@ body.dark-mode .hero-title {
     transform: translateY(30px);
 }
 
+.page-next-button {
+    position: fixed;
+    left: 50%;
+    bottom: 1.75rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: transparent;
+    border: 2px solid #2a5ef0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 900;
+    box-shadow: none;
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    animation: pageNextPulse 2.8s ease-out infinite;
+    position: fixed;
+}
+
+.page-next-button::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border: none;
+    z-index: 2;
+}
+
+.page-next-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 2px solid rgba(42, 94, 240, 0.4);
+    transform: scale(1);
+    opacity: 1;
+    animation: pageNextRipple 2.4s ease-out infinite;
+    z-index: 1;
+}
+
+.page-next-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.22);
+}
+
+.page-next-button:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+}
+
+.page-next-button.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+}
+
+body.dark-mode .page-next-button {
+    background: transparent;
+    border-color: var(--primary-blue);
+    box-shadow: none;
+}
+
+@keyframes pageNextPulse {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-50%) translateY(-2px);
+        opacity: 1;
+    }
+}
+
+@keyframes pageNextRipple {
+    0% {
+        transform: scale(1);
+        opacity: 0.95;
+    }
+    60% {
+        transform: scale(1.8);
+        opacity: 0.25;
+    }
+    85% {
+        transform: scale(2.1);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(2.1);
+        opacity: 0;
+    }
+}
+
 /* Scroll Indicator */
 .scroll-indicator {
     position: absolute;
@@ -657,21 +758,13 @@ body.dark-mode .team-showcase-subtitle {
     padding: 0 0.75rem 1rem;
     margin: 0 -0.75rem;
     scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 80, 255, 0.35) transparent;
+    scrollbar-width: none;
 }
 
 .team-row::-webkit-scrollbar {
-    height: 6px;
-}
-
-.team-row::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.team-row::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, rgba(0, 80, 255, 0.35), rgba(102, 204, 255, 0.45));
-    border-radius: 999px;
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 @media (max-width: 1024px) {
@@ -961,6 +1054,17 @@ body.dark-mode .team-empty-card p {
     .team-card {
         padding: 1.4rem 1.35rem 1.6rem;
         flex: 0 0 clamp(240px, 48vw, 320px);
+    }
+
+    .team-card-body {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .team-name,
+    .team-role,
+    .team-bio {
+        text-align: left;
     }
 }
 
@@ -1795,7 +1899,7 @@ body.dark-mode .footer p {
     }
 
     .about-section .section-content {
-        text-align: center;
+        text-align: left;
     }
 
     .services-section {

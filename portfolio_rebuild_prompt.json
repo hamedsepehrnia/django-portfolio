@@ -1,0 +1,768 @@
+{
+  "project_type": "Django Portfolio Website",
+  "project_name": "SkyPardaz Portfolio",
+  "description": "A modern, bilingual (English/Farsi) portfolio website with animated 3D starfield background, dark mode, and full content management system",
+  
+  "technology_stack": {
+    "backend": {
+      "framework": "Django 4.2.11+",
+      "python_version": "3.12",
+      "database": "SQLite3",
+      "dependencies": [
+        "Django>=4.2.11",
+        "django-modeltranslation>=0.18.12",
+        "Pillow>=10.0.0",
+        "python-decouple>=3.8",
+        "whitenoise>=6.7.0"
+      ]
+    },
+    "frontend": {
+      "libraries": [
+        "Three.js r128 (CDN)",
+        "GSAP 3.12.2 with ScrollTrigger and ScrollToPlugin (CDN)"
+      ],
+      "fonts": {
+        "english": ["Inter", "Poppins", "Sora"],
+        "persian": ["Vazirmatn", "Inter", "Poppins"]
+      }
+    }
+  },
+
+  "project_structure": {
+    "root_directory": "skypardaz",
+    "django_app": "portfolio",
+    "main_settings": "skypardaz/settings.py",
+    "urls": {
+      "root": "skypardaz/urls.py",
+      "app": "portfolio/urls.py"
+    },
+    "templates": "portfolio/templates/portfolio/",
+    "static_files": {
+      "css": "portfolio/static/portfolio/css/",
+      "js": "portfolio/static/portfolio/js/",
+      "images": "portfolio/static/portfolio/img/",
+      "admin_css": "portfolio/static/admin/css/",
+      "admin_js": "portfolio/static/admin/js/"
+    },
+    "media_files": "media/",
+    "locale_files": "locale/"
+  },
+
+  "django_settings": {
+    "secret_key": "Use python-decouple config('SECRET_KEY')",
+    "debug": "Use python-decouple config('DEBUG', default=False, cast=bool)",
+    "allowed_hosts": "Use python-decouple config('ALLOWED_HOSTS', default='skypardaz.ir,www.skypardaz.ir', cast=Csv())",
+    "installed_apps": [
+      "modeltranslation (MUST be before django.contrib.admin)",
+      "django.contrib.admin",
+      "django.contrib.auth",
+      "django.contrib.contenttypes",
+      "django.contrib.sessions",
+      "django.contrib.messages",
+      "django.contrib.staticfiles",
+      "django.contrib.sitemaps",
+      "portfolio"
+    ],
+    "middleware": [
+      "django.middleware.security.SecurityMiddleware",
+      "whitenoise.middleware.WhiteNoiseMiddleware",
+      "django.contrib.sessions.middleware.SessionMiddleware",
+      "django.middleware.locale.LocaleMiddleware",
+      "django.middleware.common.CommonMiddleware",
+      "django.middleware.csrf.CsrfViewMiddleware",
+      "django.contrib.auth.middleware.AuthenticationMiddleware",
+      "django.contrib.messages.middleware.MessageMiddleware",
+      "django.middleware.clickjacking.XFrameOptionsMiddleware"
+    ],
+    "internationalization": {
+      "language_code": "fa",
+      "languages": [
+        ["en", "English"],
+        ["fa", "فارسی"]
+      ],
+      "locale_paths": ["BASE_DIR / 'locale'"],
+      "time_zone": "UTC",
+      "use_i18n": true,
+      "use_l10n": true,
+      "use_tz": true
+    },
+    "modeltranslation": {
+      "default_language": "en",
+      "languages": ["en", "fa"],
+      "fallback_languages": ["en", "fa"]
+    },
+    "static_files": {
+      "static_url": "/static/",
+      "static_root": "BASE_DIR / 'staticfiles'",
+      "staticfiles_dirs": ["BASE_DIR / 'static'"],
+      "staticfiles_storage": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+    "media_files": {
+      "media_url": "/media/",
+      "media_root": "Use python-decouple config('MEDIA_ROOT', default=str(BASE_DIR / 'media'))"
+    },
+    "templates": {
+      "backend": "django.template.backends.django.DjangoTemplates",
+      "context_processors": [
+        "django.template.context_processors.debug",
+        "django.template.context_processors.request",
+        "django.contrib.auth.context_processors.auth",
+        "django.contrib.messages.context_processors.messages",
+        "django.template.context_processors.i18n",
+        "portfolio.context_processors.site_settings"
+      ]
+    }
+  },
+
+  "database_models": {
+    "Hero": {
+      "description": "Hero section content for homepage",
+      "fields": {
+        "title": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "subtitle": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "description": "TextField(blank=True, null=True) - TRANSLATED",
+        "is_active": "BooleanField(default=True)"
+      },
+      "translation_fields": ["title", "subtitle", "description"]
+    },
+    "About": {
+      "description": "About section content blocks",
+      "fields": {
+        "title": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "content": "TextField(blank=True, null=True) - TRANSLATED",
+        "order": "IntegerField(default=0)",
+        "is_active": "BooleanField(default=True)"
+      },
+      "meta": {
+        "ordering": ["order", "id"]
+      },
+      "translation_fields": ["title", "content"]
+    },
+    "TeamSection": {
+      "description": "Team showcase section header",
+      "fields": {
+        "title": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "subtitle": "TextField(blank=True, null=True) - TRANSLATED",
+        "is_active": "BooleanField(default=True)"
+      },
+      "translation_fields": ["title", "subtitle"]
+    },
+    "TeamMember": {
+      "description": "Team member information",
+      "fields": {
+        "name": "CharField(max_length=120) - TRANSLATED",
+        "role": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "bio": "TextField(blank=True, null=True) - TRANSLATED",
+        "photo": "ImageField(upload_to='team/', blank=True, null=True)",
+        "linkedin_url": "URLField(blank=True, null=True)",
+        "instagram_url": "URLField(blank=True, null=True)",
+        "github_url": "URLField(blank=True, null=True)",
+        "order": "IntegerField(default=0)",
+        "is_active": "BooleanField(default=True)"
+      },
+      "meta": {
+        "ordering": ["order", "id"]
+      },
+      "translation_fields": ["name", "role", "bio"]
+    },
+    "Service": {
+      "description": "Service items with SVG icons",
+      "fields": {
+        "title": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "description": "TextField(blank=True, null=True) - TRANSLATED",
+        "icon_svg": "TextField - SVG code for icon",
+        "order": "IntegerField(default=0)",
+        "is_active": "BooleanField(default=True)"
+      },
+      "meta": {
+        "ordering": ["order", "id"]
+      },
+      "translation_fields": ["title", "description"]
+    },
+    "Technology": {
+      "description": "Technologies used in portfolio items",
+      "fields": {
+        "name": "CharField(max_length=100)",
+        "order": "IntegerField(default=0)",
+        "is_active": "BooleanField(default=True)"
+      },
+      "meta": {
+        "ordering": ["order", "name"]
+      },
+      "note": "NOT TRANSLATED - technology names are universal"
+    },
+    "PortfolioItem": {
+      "description": "Portfolio project items",
+      "fields": {
+        "title": "CharField(max_length=200, blank=True, null=True) - TRANSLATED",
+        "description": "TextField(blank=True, null=True) - TRANSLATED",
+        "image": "ImageField(upload_to='portfolio/', blank=True, null=True)",
+        "portfolio_type": "CharField with choices: 'online' or 'offline'",
+        "url": "URLField(blank=True, null=True) - Only for online portfolios",
+        "offline_file": "FileField(upload_to='portfolio/offline/', blank=True, null=True) - ZIP file for offline portfolios",
+        "technologies": "ManyToManyField(Technology, blank=True)",
+        "order": "IntegerField(default=0)",
+        "is_active": "BooleanField(default=True)"
+      },
+      "meta": {
+        "ordering": ["order", "id"]
+      },
+      "validation": {
+        "online": "URL is required when portfolio_type='online'",
+        "offline": "offline_file is required when portfolio_type='offline'"
+      },
+      "image_optimization": {
+        "max_width": 1920,
+        "max_height": 1920,
+        "jpeg_quality": 85,
+        "webp_quality": 80,
+        "auto_convert": "PNG without transparency -> JPEG, others optimized"
+      },
+      "translation_fields": ["title", "description"]
+    },
+    "SiteSetting": {
+      "description": "Global site settings",
+      "fields": {
+        "site_title": "CharField(max_length=200) - TRANSLATED",
+        "is_active": "BooleanField(default=True)",
+        "updated_at": "DateTimeField(auto_now=True)"
+      },
+      "meta": {
+        "ordering": ["-updated_at", "-id"]
+      },
+      "translation_fields": ["site_title"]
+    },
+    "ContactInfo": {
+      "description": "Contact information",
+      "fields": {
+        "email": "EmailField",
+        "phone": "CharField(max_length=20)",
+        "telegram_url": "URLField(blank=True, null=True)",
+        "instagram_url": "URLField(blank=True, null=True)",
+        "is_active": "BooleanField(default=True)"
+      },
+      "note": "NOT TRANSLATED - contact info is universal"
+    },
+    "ContactMessage": {
+      "description": "Contact form submissions",
+      "fields": {
+        "name": "CharField(max_length=200)",
+        "email": "EmailField",
+        "subject": "CharField(max_length=200)",
+        "message": "TextField",
+        "created_at": "DateTimeField(auto_now_add=True)",
+        "is_read": "BooleanField(default=False)"
+      },
+      "meta": {
+        "ordering": ["-created_at"]
+      }
+    }
+  },
+
+  "admin_configuration": {
+    "hero_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["title", "subtitle", "is_active"],
+      "list_filter": ["is_active"],
+      "search_fields": ["title", "subtitle"]
+    },
+    "about_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["title", "order", "is_active"],
+      "list_filter": ["is_active"],
+      "search_fields": ["title", "content"],
+      "ordering": ["order", "id"]
+    },
+    "team_member_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["name", "role", "order", "is_active"],
+      "list_filter": ["is_active"],
+      "search_fields": ["name", "role", "bio"],
+      "ordering": ["order", "id"]
+    },
+    "team_section_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["title", "is_active"],
+      "list_filter": ["is_active"],
+      "search_fields": ["title", "subtitle"]
+    },
+    "service_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["title", "order", "is_active"],
+      "list_filter": ["is_active"],
+      "search_fields": ["title", "description"],
+      "ordering": ["order", "id"]
+    },
+    "technology_admin": {
+      "class": "ModelAdmin (NOT TranslationAdmin)",
+      "list_display": ["name", "order", "is_active"],
+      "list_filter": ["is_active"],
+      "search_fields": ["name"],
+      "ordering": ["order", "name"],
+      "list_editable": ["order", "is_active"]
+    },
+    "portfolio_item_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["title", "portfolio_type", "order", "is_active"],
+      "list_filter": ["portfolio_type", "is_active"],
+      "search_fields": ["title", "description"],
+      "ordering": ["order", "id"],
+      "fieldsets": [
+        "Basic Information: title, description, image, order, is_active",
+        "Portfolio Type: portfolio_type",
+        "Technologies: technologies (filter_horizontal)",
+        "Online Portfolio: url (only shown when type=online)",
+        "Offline Portfolio: offline_file (only shown when type=offline)"
+      ],
+      "custom_js": "portfolio_admin.js - toggles fields based on portfolio_type",
+      "custom_css": "portfolio_admin.css"
+    },
+    "contact_info_admin": {
+      "class": "ModelAdmin",
+      "list_display": ["email", "phone", "telegram_url", "instagram_url", "is_active"],
+      "list_filter": ["is_active"]
+    },
+    "contact_message_admin": {
+      "class": "ModelAdmin",
+      "list_display": ["name", "email", "subject", "created_at", "is_read"],
+      "list_filter": ["is_read", "created_at"],
+      "search_fields": ["name", "email", "subject", "message"],
+      "readonly_fields": ["created_at"],
+      "ordering": ["-created_at"],
+      "list_editable": ["is_read"],
+      "date_hierarchy": "created_at"
+    },
+    "site_setting_admin": {
+      "class": "TranslationAdmin",
+      "list_display": ["site_title", "is_active", "updated_at"],
+      "list_filter": ["is_active"]
+    }
+  },
+
+  "url_patterns": {
+    "root_urls": {
+      "admin": "path('admin/', admin.site.urls)",
+      "i18n": "path('i18n/setlang/', set_language, name='set_language')",
+      "sitemap": "path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap')",
+      "portfolio": "i18n_patterns(path('', include('portfolio.urls')), prefix_default_language=True)"
+    },
+    "portfolio_urls": {
+      "index": "path('', views.index, name='index')",
+      "contact": "path('contact/', views.contact, name='contact')",
+      "portfolio_view": "path('portfolio/<int:portfolio_id>/', views.portfolio_view, name='view')"
+    }
+  },
+
+  "views": {
+    "index": {
+      "description": "Main portfolio page",
+      "functionality": [
+        "Get all active content: heroes, about_items, team_section, team_members, services, portfolio_items, contact_info",
+        "Pass to template 'portfolio/index.html'"
+      ]
+    },
+    "contact": {
+      "description": "Handle contact form submission",
+      "method": "POST only",
+      "functionality": [
+        "Extract: name, email, subject, message from POST",
+        "Validate all fields are filled",
+        "Create ContactMessage object",
+        "Show success/error message using Django messages framework",
+        "Redirect to index preserving current language"
+      ]
+    },
+    "portfolio_view": {
+      "description": "View for displaying offline portfolio",
+      "functionality": [
+        "Get PortfolioItem by id and is_active=True",
+        "If portfolio_type='online': redirect to item.url",
+        "If portfolio_type='offline': serve offline_file as FileResponse with as_attachment=True"
+      ]
+    }
+  },
+
+  "templates": {
+    "base_template": {
+      "file": "portfolio/templates/portfolio/base.html",
+      "features": [
+        "Loads static files and i18n",
+        "Sets lang and dir attributes based on LANGUAGE_CODE",
+        "RTL support: dir='rtl' when LANGUAGE_CODE='fa'",
+        "Conditional font loading: Vazirmatn for Persian, Sora for English",
+        "Conditional CSS: styles-fa.css for Persian",
+        "Three.js canvas container (#canvas-container)",
+        "Cursor trail element (.cursor-trail)",
+        "Navigation with logo, menu, dark mode toggle, language switcher",
+        "Messages container for Django messages",
+        "Footer",
+        "Scripts: Three.js, GSAP, ScrollTrigger, ScrollToPlugin, custom script.js"
+      ],
+      "navigation": {
+        "logo": "portfolio/img/logo.png",
+        "menu_items": ["Home", "About", "Services", "Portfolio", "Contact"],
+        "dark_mode_toggle": "Button with moon/sun icons",
+        "language_switcher": "Shows opposite language (EN/FA)"
+      }
+    },
+    "index_template": {
+      "file": "portfolio/templates/portfolio/index.html",
+      "sections": [
+        {
+          "id": "home",
+          "class": "hero",
+          "content": "Hero section with title, subtitle, description from first active Hero",
+          "features": ["Scroll indicator with animated arrow"]
+        },
+        {
+          "id": "about",
+          "class": "section about-section",
+          "content": [
+            "Section title: 'About Us'",
+            "About items loop (from about_items)",
+            "Team showcase (if team_members exist)",
+            "Team section title/subtitle from TeamSection",
+            "Team member cards with photo, name, role, bio, social links"
+          ]
+        },
+        {
+          "id": "services",
+          "class": "section services-section",
+          "content": [
+            "Section title: 'Our Services'",
+            "Services grid with icon (SVG), title, description",
+            "Horizontal scroll container for services"
+          ]
+        },
+        {
+          "id": "portfolio",
+          "class": "section portfolio-section",
+          "content": [
+            "Section title: 'Portfolio'",
+            "Portfolio grid",
+            "Each item: image (lazy-loaded), title, description, technologies tags",
+            "Links: online portfolios -> external URL, offline portfolios -> portfolio view URL"
+          ]
+        },
+        {
+          "id": "contact",
+          "class": "section contact-section",
+          "content": [
+            "Two-column layout: contact info + contact form",
+            "Contact info: email, phone, telegram, instagram from ContactInfo",
+            "Contact form: name, email, subject, message with CSRF token",
+            "Form submits to portfolio:contact URL"
+          ]
+        }
+      ]
+    }
+  },
+
+  "frontend_features": {
+    "three_js_starfield": {
+      "description": "Animated 3D starfield background",
+      "specifications": {
+        "particle_count": "6000 (mobile) / 12000 (desktop)",
+        "colors": ["#0050FF (primary blue)", "#66CCFF (light blue)", "#FFFFFF (white)", "#FFCCE6 (pink)"],
+        "particle_size": "1.5-5.5px",
+        "opacity": "0.2-1.0 (light mode) / 0.05-0.25 (dark mode)",
+        "animation": "Slow rotation (y: 0.0005, x: 0.0002) and drift",
+        "scroll_effect": "Camera moves slightly, stars scale up, particle size increases",
+        "dark_mode_adaptation": "Reduces opacity, darkens colors, adjusts particle appearance"
+      },
+      "performance": {
+        "mobile": "Reduced particles, no antialiasing, lower pixel ratio (max 1.5)",
+        "desktop": "Full particles, antialiasing, pixel ratio (max 2)"
+      }
+    },
+    "gsap_animations": {
+      "scroll_trigger": "All sections animate on scroll",
+      "hero_animations": "Title, subtitle, description fade in with delays",
+      "section_animations": "Section titles, text blocks, cards animate on scroll into view",
+      "smooth_scroll": "Navigation links use GSAP ScrollToPlugin",
+      "camera_movement": "Three.js camera moves based on scroll progress"
+    },
+    "lazy_loading": {
+      "description": "Intersection Observer for images and backgrounds",
+      "implementation": "Lazy-load portfolio images and background images",
+      "fallback": "Load immediately if IntersectionObserver not supported"
+    },
+    "dark_mode": {
+      "description": "Full dark mode support",
+      "features": [
+        "Toggle button in navigation",
+        "Saves preference to localStorage",
+        "Respects system preference as default",
+        "Updates starfield appearance",
+        "CSS variables for dark mode colors",
+        "Smooth transitions"
+      ],
+      "colors": {
+        "background": "Linear gradient from #0a0a15 to #151520",
+        "text": "#e0e0e8",
+        "cards": "rgba(31, 31, 46, 0.6)",
+        "borders": "rgba(255, 255, 255, 0.1)"
+      }
+    },
+    "responsive_design": {
+      "breakpoints": "Mobile-first, 768px breakpoint",
+      "features": [
+        "Mobile menu toggle",
+        "Responsive typography (clamp)",
+        "Adaptive grid layouts",
+        "Touch-friendly interactions"
+      ]
+    },
+    "cursor_trail": {
+      "description": "Optional cursor trail effect",
+      "implementation": "Follows mouse with smooth animation",
+      "mobile": "Hides after 3 seconds of inactivity"
+    }
+  },
+
+  "css_styling": {
+    "color_scheme": {
+      "light_mode": {
+        "primary_blue": "#0050FF",
+        "light_blue": "#66CCFF",
+        "white": "#FFFFFF",
+        "pink": "#FFCCE6",
+        "ambient_light": "#EAF2FF",
+        "directional_light": "#BBD7FF",
+        "text_dark": "#1a1a2e",
+        "background": "Linear gradient from #EAF2FF to #f0f7ff"
+      },
+      "dark_mode": {
+        "bg_dark": "#0a0a15",
+        "bg_dark_secondary": "#151520",
+        "bg_dark_tertiary": "#1f1f2e",
+        "text_dark_mode": "#e0e0e8",
+        "text_dark_mode_secondary": "rgba(224, 224, 232, 0.7)",
+        "nav_bg_dark": "rgba(10, 10, 21, 0.9)",
+        "card_bg_dark": "rgba(31, 31, 46, 0.6)",
+        "border_dark": "rgba(255, 255, 255, 0.1)"
+      }
+    },
+    "typography": {
+      "english": "Inter, Poppins, Sora",
+      "persian": "Vazirmatn, Inter, Poppins",
+      "hero_title": "clamp(2.5rem, 6vw, 4rem), font-weight: 700",
+      "section_titles": "Large, bold, centered",
+      "responsive": "Uses clamp() for fluid typography"
+    },
+    "layout": {
+      "container": "max-width: 1200px, centered",
+      "sections": "Full-width with padding",
+      "grids": "Responsive grid layouts",
+      "spacing": "Consistent spacing system"
+    },
+    "effects": {
+      "glass_morphism": "Backdrop blur, semi-transparent backgrounds",
+      "smooth_transitions": "0.3s ease transitions",
+      "hover_effects": "Subtle scale and shadow on hover",
+      "scroll_animations": "Fade in, slide up on scroll"
+    },
+    "rtl_support": {
+      "file": "styles-fa.css",
+      "features": [
+        "RTL direction and text alignment",
+        "Persian font (Vazirmatn)",
+        "Reversed navigation menu",
+        "RTL-specific spacing and layout adjustments"
+      ]
+    }
+  },
+
+  "javascript_functionality": {
+    "three_js_setup": {
+      "file": "portfolio/static/portfolio/js/script.js",
+      "functions": [
+        "initThreeJS() - Creates scene, camera, renderer, starfield",
+        "createStarfield() - Generates particles with colors, sizes, positions",
+        "updateStarfieldForDarkMode() - Adjusts starfield for dark mode",
+        "animate() - Animation loop with rotation and drift",
+        "onWindowResize() - Handles window resize"
+      ]
+    },
+    "gsap_animations": {
+      "functions": [
+        "initGSAPAnimations() - Sets up all scroll animations",
+        "Hero animations with delays",
+        "Section title animations on scroll",
+        "Portfolio item animations",
+        "Service card animations",
+        "Team card animations",
+        "Contact section animations",
+        "Scroll-based camera movement"
+      ]
+    },
+    "navigation": {
+      "functions": [
+        "initNavigationScroll() - Smooth scroll to sections",
+        "initMobileMenu() - Mobile menu toggle",
+        "Closes menu on link click"
+      ]
+    },
+    "dark_mode": {
+      "functions": [
+        "initDarkMode() - Initializes dark mode",
+        "Reads localStorage and system preference",
+        "Updates starfield on toggle",
+        "Saves preference to localStorage"
+      ]
+    },
+    "lazy_loading": {
+      "functions": [
+        "initLazyLoading() - Sets up IntersectionObserver",
+        "loadBackground() - Loads background images",
+        "loadImage() - Loads regular images"
+      ]
+    },
+    "cursor_trail": {
+      "functions": [
+        "initCursorTrail() - Creates cursor trail effect",
+        "Can be disabled via enableCursorTrail flag",
+        "Mobile-specific hide timer"
+      ]
+    },
+    "contact_form": {
+      "functions": [
+        "initContactForm() - Form submission handler",
+        "Allows normal Django form submission",
+        "Django messages framework handles success/error"
+      ]
+    }
+  },
+
+  "translation_setup": {
+    "package": "django-modeltranslation",
+    "translation_file": "portfolio/translation.py",
+    "registered_models": [
+      "Hero: title, subtitle, description",
+      "About: title, content",
+      "TeamSection: title, subtitle",
+      "TeamMember: name, role, bio",
+      "Service: title, description",
+      "PortfolioItem: title, description",
+      "SiteSetting: site_title"
+    ],
+    "locale_path": "locale/",
+    "languages": ["en", "fa"],
+    "translation_commands": [
+      "python manage.py makemigrations",
+      "python manage.py migrate",
+      "python manage.py makemessages -l fa",
+      "python manage.py compilemessages"
+    ]
+  },
+
+  "sitemap": {
+    "file": "portfolio/sitemaps.py",
+    "classes": [
+      "StaticViewSitemap - for index page",
+      "PortfolioItemSitemap - for portfolio items"
+    ],
+    "features": [
+      "i18n support",
+      "changefreq and priority settings",
+      "Only active portfolio items"
+    ]
+  },
+
+  "context_processors": {
+    "file": "portfolio/context_processors.py",
+    "function": "site_settings(request)",
+    "returns": {
+      "site_settings": "Active SiteSetting object",
+      "site_title": "Translated site title or default"
+    }
+  },
+
+  "admin_customization": {
+    "javascript": {
+      "file": "portfolio/static/admin/js/portfolio_admin.js",
+      "functionality": "Shows/hides online/offline fields based on portfolio_type selection"
+    },
+    "css": {
+      "file": "portfolio/static/admin/css/portfolio_admin.css",
+      "functionality": "Styles for portfolio admin interface"
+    }
+  },
+
+  "image_optimization": {
+    "implementation": "PortfolioItem.save() method",
+    "specifications": {
+      "max_dimensions": "1920x1920",
+      "jpeg_quality": 85,
+      "webp_quality": 80,
+      "auto_conversion": "PNG without transparency -> JPEG",
+      "optimization": "All images optimized on upload"
+    },
+    "library": "Pillow (PIL)"
+  },
+
+  "deployment_requirements": {
+    "static_files": "WhiteNoise for static file serving",
+    "media_files": "Configured via MEDIA_ROOT and MEDIA_URL",
+    "environment_variables": {
+      "SECRET_KEY": "Django secret key",
+      "DEBUG": "Boolean (False for production)",
+      "ALLOWED_HOSTS": "Comma-separated list",
+      "MEDIA_ROOT": "Path to media directory (optional)"
+    },
+    "collectstatic": "python manage.py collectstatic (for production)"
+  },
+
+  "key_implementation_details": {
+    "modeltranslation_order": "MUST be before django.contrib.admin in INSTALLED_APPS",
+    "translation_registration": "Import portfolio.translation in forms.py to ensure fields are registered",
+    "rtl_detection": "Use LANGUAGE_CODE == 'fa' to detect Persian",
+    "lazy_loading": "Use data-bg attribute for background images",
+    "portfolio_types": "Validate that online has URL, offline has file",
+    "image_optimization": "Happens automatically on PortfolioItem.save()",
+    "dark_mode_starfield": "Must update starfield colors and opacity when toggling",
+    "mobile_performance": "Reduce Three.js particles and disable antialiasing on mobile",
+    "language_switching": "Use Django's i18n_patterns and language template tag",
+    "contact_form": "Use Django messages framework for success/error feedback"
+  },
+
+  "testing_checklist": {
+    "functionality": [
+      "All sections display correctly",
+      "Dark mode toggle works",
+      "Language switching works (EN/FA)",
+      "RTL layout for Persian",
+      "Contact form submission",
+      "Portfolio items (online and offline)",
+      "Image optimization",
+      "Lazy loading",
+      "Mobile menu",
+      "Smooth scrolling",
+      "Starfield animation",
+      "GSAP scroll animations"
+    ],
+    "admin": [
+      "All models accessible in admin",
+      "Translation fields work",
+      "Portfolio type field toggling",
+      "Image upload and optimization",
+      "Contact messages management"
+    ],
+    "performance": [
+      "Three.js runs smoothly",
+      "Lazy loading works",
+      "Mobile performance acceptable",
+      "Static files served correctly"
+    ]
+  },
+
+  "additional_notes": {
+    "logo_file": "portfolio/static/portfolio/img/logo.png (required)",
+    "default_content": "Consider creating a management command for seeding initial data",
+    "favicon": "Uses logo.png as favicon",
+    "seo": "Sitemap included, proper meta tags recommended",
+    "accessibility": "ARIA labels on interactive elements",
+    "browser_support": "Modern browsers (ES6+, WebGL support)"
+  }
+}
+

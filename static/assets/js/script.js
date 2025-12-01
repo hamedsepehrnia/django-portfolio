@@ -354,6 +354,7 @@ function initGSAPAnimations() {
         delay: titleDelay + 0.4
     });
     
+    /*
     // Scroll indicator delay (sooner if no logo)
     const scrollDelay = heroLogoContainer ? 1.5 : titleDelay + 0.8;
     gsap.to('.scroll-indicator', {
@@ -361,6 +362,7 @@ function initGSAPAnimations() {
         duration: 1,
         delay: scrollDelay
     });
+    */
     
     // Scroll-based Camera Movement (compatible with snap scroll)
     ScrollTrigger.create({
@@ -374,16 +376,13 @@ function initGSAPAnimations() {
                 
                 // Keep camera at fixed position to maintain consistent star visibility
                 // Only slight movement for subtle parallax effect
-                camera.position.z = 1000 - (scrollProgress * 100); // Very minimal movement (was 500)
+                camera.position.z = 1000 - (scrollProgress * 100);
                 
-                // Increase scale more aggressively to keep stars visible throughout scroll
-                const scale = 1 + scrollProgress * 2; // Increased from 0.5 to 2 for better visibility
+                const scale = 1 + scrollProgress * 3;
                 stars.scale.set(scale, scale, scale);
                 
-                // Significantly increase particle size as we scroll to maintain visibility
                 if (starsMaterial) {
-                    // Base size is 4, increase to 8 at end of scroll for better visibility
-                    starsMaterial.size = 4 + (scrollProgress * 4); // Size increases from 4 to 8
+                    starsMaterial.size = 4 + (scrollProgress * 8);
                 }
             }
         }
@@ -604,14 +603,21 @@ function initNavigationScroll() {
             
             // Start scroll immediately without waiting for menu animation
             if (typeof gsap !== 'undefined' && typeof ScrollToPlugin !== 'undefined') {
-                gsap.to(window, {
-                    duration: 1.2,
-                    scrollTo: {
-                        y: target,
-                        offsetY: offset
-                    },
-                    ease: 'power2.inOut',
-                    immediateRender: true // Start immediately
+                // Kill any existing scroll animations to prevent conflicts
+                gsap.killTweensOf(window);
+                
+                // Start scroll immediately using requestAnimationFrame for instant start
+                requestAnimationFrame(() => {
+                    gsap.to(window, {
+                        duration: 1.8, // Slower duration for smoother feel
+                        scrollTo: {
+                            y: target,
+                            offsetY: offset
+                        },
+                        ease: 'power2.inOut',
+                        overwrite: true, // Overwrite any existing animations
+                        immediateRender: true // Start immediately
+                    });
                 });
             } else {
                 const targetTop = target.getBoundingClientRect().top + window.pageYOffset - offset;
@@ -647,6 +653,50 @@ function monitorPerformance() {
     }
     
     checkFrameRate();
+}
+
+function initNextSectionButton() {
+    const button = document.getElementById('pageNextButton');
+    const navMenu = document.querySelector('.nav-menu');
+    if (!button || !navMenu) return;
+    const navLinks = navMenu.querySelectorAll('.nav-link[href^="#"]');
+    const sections = [];
+    navLinks.forEach(link => {
+        const id = link.getAttribute('href');
+        if (!id || id === '#') return;
+        const el = document.querySelector(id);
+        if (!el) return;
+        sections.push({ id, el });
+    });
+    if (!sections.length) {
+        button.classList.add('is-hidden');
+        return;
+    }
+    function updateTarget() {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const viewportHeight = window.innerHeight || 0;
+        const center = scrollY + viewportHeight / 2;
+        let currentIndex = 0;
+        for (let i = 0; i < sections.length; i++) {
+            const rect = sections[i].el.getBoundingClientRect();
+            const top = rect.top + scrollY;
+            const bottom = top + rect.height;
+            if (center >= top && center < bottom) {
+                currentIndex = i;
+                break;
+            }
+        }
+        if (currentIndex >= sections.length - 1) {
+            button.classList.add('is-hidden');
+            return;
+        }
+        button.classList.remove('is-hidden');
+        const next = sections[currentIndex + 1];
+        button.setAttribute('href', next.id);
+    }
+    updateTarget();
+    window.addEventListener('scroll', updateTarget);
+    window.addEventListener('resize', updateTarget);
 }
 
 // Initialize Dark Mode
@@ -753,6 +803,8 @@ window.addEventListener('load', () => {
     
     // Initialize contact form handler
     initContactForm();
+    
+    initNextSectionButton();
     
     // monitorPerformance(); // Uncomment for performance monitoring
 });
