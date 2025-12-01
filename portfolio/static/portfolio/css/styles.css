@@ -489,7 +489,6 @@ body.dark-mode .hero-title {
     box-shadow: none;
     transform: translateX(-50%);
     transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    animation: pageNextPulse 2.8s ease-out infinite;
     position: fixed;
 }
 
@@ -526,7 +525,12 @@ body.dark-mode .hero-title {
 .page-next-button.is-hidden {
     opacity: 0;
     pointer-events: none;
-    transform: translateY(6px);
+    transform: translateX(-50%) translateY(6px);
+    animation: pageNextFadeOut 0.45s ease-out forwards;
+}
+
+.page-next-button:not(.is-hidden) {
+    animation: pageNextFadeIn 0.45s ease-out forwards, pageNextPulse 2.8s ease-out infinite;
 }
 
 body.dark-mode .page-next-button {
@@ -542,6 +546,28 @@ body.dark-mode .page-next-button {
     }
     50% {
         transform: translateX(-50%) translateY(-2px);
+        opacity: 1;
+    }
+}
+
+@keyframes pageNextFadeOut {
+    0% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) translateY(6px);
+        opacity: 0;
+    }
+}
+
+@keyframes pageNextFadeIn {
+    0% {
+        transform: translateX(-50%) translateY(6px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(-50%) translateY(0);
         opacity: 1;
     }
 }
