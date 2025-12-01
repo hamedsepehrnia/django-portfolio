@@ -491,9 +491,12 @@ body.dark-mode .hero-title {
     transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     animation: pageNextPulse 2.8s ease-out infinite;
     position: fixed;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.page-next-button:focus {
+.page-next-button:focus,
+.page-next-button:focus-visible,
+.page-next-button:active {
     outline: none;
 }
 
