@@ -6,6 +6,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% if site_title %}{{ site_title }}{% else %}{% trans "SkyPardaz - Creative Studio" %}{% endif %}{% endblock %}</title>
+    
+    <meta name="description" content="{% block meta_description %}{% if site_description %}{{ site_description }}{% else %}{% trans "SkyPardaz Creative Studio - Web Design, Development & Digital Solutions. We craft beautiful digital experiences." %}{% endif %}{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}{% trans "web design, web development, digital studio, creative agency, UI/UX design, SkyPardaz, طراحی سایت, توسعه وب, استودیو دیجیتال" %}{% endblock %}">
+    <meta name="author" content="SkyPardaz">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0050FF">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% if site_title %}{{ site_title }}{% else %}{% trans "SkyPardaz - Creative Studio" %}{% endif %}">
+    <meta property="og:description" content="{% if site_description %}{{ site_description }}{% else %}{% trans "SkyPardaz Creative Studio - Web Design, Development & Digital Solutions." %}{% endif %}">
+    <meta property="og:image" content="{% static 'portfolio/img/logo.png' %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:locale" content="{{ LANGUAGE_CODE }}">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% if site_title %}{{ site_title }}{% else %}{% trans "SkyPardaz - Creative Studio" %}{% endif %}">
+    <meta name="twitter:description" content="{% if site_description %}{{ site_description }}{% else %}{% trans "SkyPardaz Creative Studio - Web Design, Development & Digital Solutions." %}{% endif %}">
+    <meta name="twitter:image" content="{% static 'portfolio/img/logo.png' %}">
+    
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
     <link rel="icon" href="{% static 'portfolio/img/logo.png' %}" type="image/png">
     <link rel="shortcut icon" href="{% static 'portfolio/img/logo.png' %}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
